@@ -2,16 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
-import { Box, Card, Chip, Button, Divider, Typography, CardContent, Container, Link, Icon, Grid, Stack, Autocomplete, TextField } from '@material-ui/core';
+import {
+	Box, Card, Chip, Button, Divider, Typography, CardContent,
+	Container, Link, Fab, Grid, Stack, Autocomplete, TextField
+} from '@material-ui/core';
 import { DesktopDatePicker, LocalizationProvider } from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
-
-
-import clockFill from '@iconify/icons-eva/clock-fill';
+import EventIcon from '@material-ui/icons/Event';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import CancelIcon from '@material-ui/icons/Cancel';
 // components
 import Page from "../../components/Page";
+import MFab from "../../components/@material-extend/MFab";
+
 // utils
 import mockData from '../../utils/mock-data';
+import { fDate } from '../../utils/formatTime';
+
 //
 import { varFadeInUp, MotionInView, varFadeInDown } from '../../components/animate';
 import Label from '../../components/Label';
@@ -26,7 +34,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 	}
 }));
 
-const MOCK_MOVIES = [...Array(5)].map((_, index) => ({
+const MOCK_MOVIES = [...Array(8)].map((_, index) => ({
 	id: mockData.id(index),
 	title: mockData.text.title(index),
 	image: mockData.image.feed(index),
@@ -34,22 +42,56 @@ const MOCK_MOVIES = [...Array(5)].map((_, index) => ({
 	description: mockData.text.description(index),
 }));
 
-
-const MOCK_SLOTS = [...Array(5)].map((_, index) => ({
+const MOCK_SLOTS = [...Array(8)].map((_, index) => ({
 	id: mockData.id(index),
 	title: mockData.text.title(index),
 	image: mockData.image.feed(index),
 	short: mockData.role(index),
 	description: mockData.text.description(index),
 }));
+
+const ROWS = 10;
+const COLS = 10;
+const FILLED_SLOTS = [
+	[true, false, true, false, true, false, false, true, false, true],
+	[true, false, true, true, false, false, true, false, true, false],
+	[true, false, true, false, false, true, true, false, true, false],
+	[true, true, false, false, true, false, true, false, true, false],
+	[true, false, true, false, false, true, true, false, true, false],
+	[true, false, true, false, false, true, true, false, true, false],
+	[true, false, true, false, true, false, false, true, true, false],
+	[true, false, true, false, true, true, false, false, true, false],
+	[true, false, true, false, true, false, true, false, false, true],
+	[true, false, true, false, true, false, true, false, false, true],
+	[true, false, true, false, true, false, true, false, false, true],
+	[true, false, true, false, true, true, false, false, true, false],
+]
 
 export default function MovieBook() {
 	const location = useLocation();
 	const maphim = Number(new URLSearchParams(location.search).get("maphim"));
 	const [movie, setMovie] = useState();
 	const [date, setDate] = useState(new Date());
-	console.log(maphim, movie, MOCK_MOVIES[maphim]);
-
+	const [filledSlot, setFilledSlot] = useState([...FILLED_SLOTS]);
+	const [tickets, setTickets] = useState([]);
+	const handleClickSlot = (r, c) => {
+		setFilledSlot((prevFilledSlot) => {
+			const newFilledSlot = [...prevFilledSlot];
+			newFilledSlot[r][c] = true;
+			console.log(newFilledSlot);
+			return newFilledSlot;
+		});
+		setTickets((prevTickets) => [...prevTickets, { movie, r, c }])
+	}
+	const handleClickRemove = (r, c) => {
+		setFilledSlot((prevFilledSlot) => {
+			const newFilledSlot = [...prevFilledSlot];
+			newFilledSlot[r][c] = false;
+			console.log(newFilledSlot);
+			return newFilledSlot;
+		});
+		setTickets((prevTickets) => prevTickets.filter(ticket => !(ticket.r === r && ticket.c === c)));
+	}
 	useEffect(() => {
 		if (maphim != null) setMovie(MOCK_MOVIES[maphim]);
 	}, [])
@@ -72,7 +114,7 @@ export default function MovieBook() {
 					<Box>
 						<Grid container spacing={1}>
 							<Grid item xs={12} md={4}>
-								<Card><CardContent>
+								<Card sx={{ overflow: 'visible', marginBottom: 2 }}><CardContent>
 
 									<Stack spacing={2}>
 										<Typography variant="h5" sx={{ color: 'primary.main' }}>
@@ -100,11 +142,9 @@ export default function MovieBook() {
 										</LocalizationProvider>
 									</Stack>
 								</CardContent></Card>
-							</Grid>
-							<Grid item xs={12} md={5}>
 								<Card>
 									<CardContent>
-										<Stack spacing={2}>
+										<Stack spacing={1}>
 											<Typography variant="h5" sx={{ color: 'primary.main' }}>
 												Các suất chiếu
 											</Typography>
@@ -112,6 +152,18 @@ export default function MovieBook() {
 											(
 												<>
 													<Divider />
+													<Grid container spacing={1}>
+														<Grid item>
+															<Chip color="primary" icon={<EventIcon />} label={fDate(date)} size="small" />
+														</Grid>
+
+														<Grid item>
+															<Chip icon={<QueryBuilderIcon />} label="18h00" size="small" />
+														</Grid>
+														<Grid item>
+															<Chip icon={<HourglassEmptyIcon />} label="01h34m" size="small" />
+														</Grid>
+													</Grid>
 													<Grid container spacing={1}>
 														<Grid item xs={2}>
 															<img
@@ -125,10 +177,6 @@ export default function MovieBook() {
 																{slot.title}
 															</Typography>
 														</Grid>
-														<Grid item xs={12}>
-														<Label>08/11/2021</Label>
-
-														</Grid>
 													</Grid>
 												</>
 											))}
@@ -136,15 +184,88 @@ export default function MovieBook() {
 									</CardContent>
 								</Card>
 							</Grid>
-							<Grid item xs={12} md={3}>
-								<Typography variant="h5" sx={{ color: 'primary.main' }}>
-									Các suất chiếu
-								</Typography>
+							<Grid item xs={12} md={8}>
+								<Card sx={{ marginBottom: 2 }}>
+									<CardContent>
+										<Stack spacing={2}>
+											<Typography variant="h5" sx={{ color: 'primary.main' }}>
+												Các suất chiếu
+											</Typography>
+											<Box>
+												<Stack spacing={1}>
+													<Card sx={{ backgroundColor: 'primary.main', color: 'common.white', fontWeight: 'bold' }}>
+														<CardContent>
+															Màn hình
+														</CardContent>
+													</Card>
+													{
+														[...Array(ROWS)].map((_, i) =>
+															<Grid container spacing={1} key={i}>
+																{[...Array(COLS)].map((_, j) =>
+																	<Grid item key={j} xs={12 / COLS}>
+																		<Button
+																			sx={{ minWidth: 0, width: 1 }}
+																			variant="contained"
+																			color={filledSlot[i][j] ? "primary" : "inherit"}
+																			onClick={() => { handleClickSlot(i, j) }}
+																		>
+																			{`${i + 1}-${j + 1}`}
+																		</Button>
+																	</Grid>
+																)
+
+																}
+															</Grid>
+														)
+													}
+												</Stack>
+											</Box>
+										</Stack>
+									</CardContent>
+								</Card>
+								<Card>
+
+									<CardContent>
+										<Typography variant="h5" sx={{ color: 'primary.main' }}>
+											Vé đã đặt
+										</Typography>
+										<Stack spacing={1}>
+											{
+												tickets.map(ticket =>
+													<Card>
+														<CardContent>
+															<Box sx={{
+																display: 'flex', p: 1, bgcolor: 'background.paper'
+															}} >
+																<Box sx={{ flexGrow: 1 }}>
+																	<Typography>
+																		{ticket.movie.title}
+																	</Typography>
+																	<Chip label={`Hàng ${ticket.r}`} />
+																	<Chip label={`Cột ${ticket.c}`} />
+																</Box>
+																<Box>
+																	<MFab
+																		color="error"
+																		onClick={() => { handleClickRemove(ticket.r, ticket.c) }}
+																		size="small"
+																	>
+																		<CancelIcon />
+																	</MFab>
+																</Box>
+															</Box>
+														</CardContent>
+													</Card>
+												)
+											}
+										</Stack>
+									</CardContent>
+								</Card>
 							</Grid>
 						</Grid>
 					</Box>
 				</Container>
 			</RootStyle>
-		</Page>
+		</Page >
 	)
 }
