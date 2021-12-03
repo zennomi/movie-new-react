@@ -17,13 +17,6 @@ import { CarouselControlsArrowsBasic2 } from '../../carousel/controls';
 
 // ----------------------------------------------------------------------
 
-// const MOCK_CAROUSELS = [...Array(5)].map((_, index) => ({
-// 	id: mockData.id(index),
-// 	title: mockData.text.title(index),
-// 	image: mockData.image.feed(index),
-// 	description: mockData.text.description(index)
-// }));
-
 const RootStyle = styled('div')(({ theme }) => ({
 	overflow: 'hidden',
 	position: 'relative',
@@ -49,7 +42,7 @@ CarouselItem.propTypes = {
 };
 
 function CarouselItem({ item, index }) {
-	const { poster, tenphim, maphim } = item;
+	const { bia, ten, ma } = item;
 
 	return (
 		<Paper
@@ -66,7 +59,7 @@ function CarouselItem({ item, index }) {
 				}
 			}}
 		>
-			<CarouselImgStyle alt={tenphim} src={poster} />
+			<CarouselImgStyle alt={ten} src={bia} />
 			<CardContent
 				sx={{
 					bottom: 0,
@@ -80,10 +73,10 @@ function CarouselItem({ item, index }) {
 				}}
 			>
 				<Typography variant="h4" paragraph>
-					{tenphim}
+					{ten}
 				</Typography>
 				<Link
-					to={`/movies/${maphim}`}
+					to={`/movies/${ma}`}
 					color="inherit"
 					variant="overline"
 					component={RouterLink}
@@ -101,6 +94,10 @@ function CarouselItem({ item, index }) {
 			</CardContent>
 		</Paper>
 	);
+}
+
+function emptyDiv() {
+	return <div>{" "}</div>
 }
 
 export default function LandingHotMovie() {
@@ -131,6 +128,7 @@ export default function LandingHotMovie() {
 		centerMode: true,
 		centerPadding: '60px',
 		rtl: Boolean(theme.direction === 'rtl'),
+		arrows: false,
 		responsive: [
 			{
 				breakpoint: 1024,
@@ -174,7 +172,7 @@ export default function LandingHotMovie() {
 					<CardContent>
 						<Slider ref={carouselRef} {...settings}>
 							{movies.map((item, index) => (
-								<CarouselItem key={item.maphim} item={item} index={index} />
+								<CarouselItem key={item.ma} item={item} index={index} />
 							))}
 						</Slider>
 					</CardContent>

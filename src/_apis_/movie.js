@@ -7,16 +7,23 @@ import mockData from '../utils/mock-data';
 const skip = 10;
 
 export const movies = [...Array(25)].map((_, index) => ({
-    maphim: index,
-    tenphim: faker.lorem.sentence(),
+    ma: index,
+    ten: faker.lorem.sentence(),
     thoigian: faker.datatype.number(),
     theloai: faker.music.genre(),
     ngonngu: faker.address.country(),
-    rate: faker.datatype.number({ min: 0, max: 5 }),
+    danhgia: faker.datatype.number({ min: 0, max: 5 }),
     trailer: faker.internet.url(),
-    ghichu: faker.lorem.sentences,
-    poster: faker.image.imageUrl(900, 1600, 'food', true)
+    noidung: faker.lorem.sentences(),
+    bia: faker.image.imageUrl(900, 1600, 'food', true)
 }));
+
+export const showtimes = [...Array(100)].map((_, index) => ({
+    maphong: faker.datatype.number({min:0, max: 5}),
+    ca: faker.datatype.number({min:0, max: 5}),
+    hang: faker.datatype.number({min: 10, max: 15}),
+    cot: faker.datatype.number({min: 10, max: 15}),
+}))
 
 mock.onGet('/api/phim').reply((config) => {
     try {
@@ -35,9 +42,17 @@ mock.onGet("/api/phim/:maphim").reply((config) => {
     try {
         let { maphim } = config.routeParams;
         maphim = Number(maphim);
-        console.log(maphim)
         return [200, { result: movies[maphim] }]
     } catch (error) {
         console.log(error);
+    }
+})
+
+mock.onGet("/api/suat-chieu").reply((config) => {
+    try {
+        return [200, {results: showtimes}]
+        
+    } catch (error) {
+        
     }
 })

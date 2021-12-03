@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
@@ -16,9 +16,16 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Page from "../../components/Page";
 import MFab from "../../components/@material-extend/MFab";
 
+// axios
+import axios from "../../utils/axios";
+
 // utils
 import mockData from '../../utils/mock-data';
 import { fDate } from '../../utils/formatTime';
+
+// hooks
+import useIsMountedRef from '../../hooks/useIsMountedRef';
+
 
 //
 import { varFadeInUp, MotionInView, varFadeInDown } from '../../components/animate';
@@ -69,11 +76,16 @@ const FILLED_SLOTS = [
 
 export default function MovieBook() {
 	const location = useLocation();
+	const isMountedRef = useIsMountedRef();
+
 	const maphim = Number(new URLSearchParams(location.search).get("maphim"));
+
 	const [movie, setMovie] = useState();
+	const [movies, setMovies] = useState();
 	const [date, setDate] = useState(new Date());
 	const [filledSlot, setFilledSlot] = useState([...FILLED_SLOTS]);
 	const [tickets, setTickets] = useState([]);
+
 	const handleClickSlot = (r, c) => {
 		setFilledSlot((prevFilledSlot) => {
 			const newFilledSlot = [...prevFilledSlot];
@@ -83,6 +95,7 @@ export default function MovieBook() {
 		});
 		setTickets((prevTickets) => [...prevTickets, { movie, r, c }])
 	}
+
 	const handleClickRemove = (r, c) => {
 		setFilledSlot((prevFilledSlot) => {
 			const newFilledSlot = [...prevFilledSlot];
@@ -92,9 +105,37 @@ export default function MovieBook() {
 		});
 		setTickets((prevTickets) => prevTickets.filter(ticket => !(ticket.r === r && ticket.c === c)));
 	}
+
+	const getMovie = useCallback(async () => {
+		try {
+			const response = await axios.get(`/api/phim/${maphim}`);
+			if (isMountedRef.current) {
+				setMovie(response.data.result);
+			}
+		} catch (err) {
+			//
+		}
+	}, [isMountedRef]);
+
+	const getMovies = useCallback(async () => {
+		try {
+			const response = await axios.get(`/api/phim`);
+			if (isMountedRef.current) {
+				setMovies(response.data.results);
+			}
+		} catch (err) {
+			//
+		}
+	}, [isMountedRef]);
+
 	useEffect(() => {
-		if (maphim != null) setMovie(MOCK_MOVIES[maphim]);
-	}, [])
+		if (maphim != null) getMovie();
+	}, [getMovie]);
+
+	useEffect(() => {
+		getMovies();
+	}, [getMovies]);
+
 	return (
 		<Page title="Đặt vé">
 			<RootStyle>
@@ -121,13 +162,13 @@ export default function MovieBook() {
 											Chọn phim và ngày
 										</Typography>
 										<Autocomplete
-											disablePortal
-											options={MOCK_MOVIES}
-											getOptionLabel={option => option.title}
+											options={movies || []}
+											getOptionLabel={option => option.ten}
+											isOptionEqualToValue={(option, value) => option.ten === value.ten}
 											renderInput={(params) => <TextField {...params} label="Phim" />}
 											value={movie}
 											onChange={(event, newMovie) => { setMovie(newMovie) }}
-											key={movie && movie.title}
+											key={movie && movie.ten}
 											sx={{ w: 1 }}
 										/>
 										<LocalizationProvider dateAdapter={AdapterDateFns}>

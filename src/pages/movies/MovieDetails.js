@@ -85,17 +85,16 @@ const SkeletonLoad = (
 export default function MovieDetails() {
 	const theme = useTheme();
 	const { themeStretch } = useSettings();
+	const isMountedRef = useIsMountedRef();
 
 	const { maphim } = useParams();
 
 	const [movie, setMovie] = useState();
-	const isMountedRef = useIsMountedRef();
 
 	const getMovie = useCallback(async () => {
 		try {
 			const response = await axios.get(`/api/phim/${maphim}`);
 			if (isMountedRef.current) {
-				console.log(response.data);
 				setMovie(response.data.result);
 			}
 		} catch (err) {
@@ -113,6 +112,7 @@ export default function MovieDetails() {
 	const handleChangeTab = (event, newValue) => {
 		setValue(newValue);
 	};
+	
 	return (
 		<Page title={movie?.title}>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
@@ -120,27 +120,27 @@ export default function MovieDetails() {
 					heading={movie?.tenphim}
 					links={[
 						{ name: 'Phim rạp', href: '/movies' },
-						// { name: sentenceCase(movie?.tenphim) }
+						{ name: movie ? sentenceCase(movie.ten) : '' }
 					]}
 				/>
 				{movie && (
 					<>
 						<Card>
 							<Grid container sx={{ p: 2 }} spacing={3}>
-								<Grid item xs={12} md={6} lg={7}>
+								<Grid item xs={12} md={3} lg={4}>
 									<Card>
-										<img src={movie.poster} alt="movie poster" />
+										<img src={movie.bia} alt="movie poster" />
 									</Card>
 									{/* <ProductDetailsCarousel /> */}
 								</Grid>
-								<Grid item xs={12} md={6} lg={5}>
+								<Grid item xs={12} md={9} lg={8}>
 									{/* <ProductDetailsSumary /> */}
 									<Label
 										variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-										color={movie.id === 'in_stock' ? 'success' : 'error'}
+										color={movie.ma === 'in_stock' ? 'success' : 'error'}
 										sx={{ textTransform: 'uppercase' }}
 									>
-										{sentenceCase(movie.id)}
+										{sentenceCase(movie.theloai)}
 									</Label>
 									<Typography
 										variant="overline"
@@ -151,21 +151,21 @@ export default function MovieDetails() {
 											color: movie.short === 'sale' ? 'error.main' : 'info.main'
 										}}
 									>
-										{movie.short}
+										{movie.thoigian}
 									</Typography>
 
 									<Typography variant="h5" paragraph>
-										{movie.tenphim}
+										{movie.ten}
 									</Typography>
 									<Stack spacing={0.5} direction="row" alignItems="center" sx={{ mb: 2 }}>
-										<Rating value={10} precision={0.1} readOnly />
+										<Rating value={movie.danhgia} precision={0.1} readOnly />
 										<Typography variant="body2" sx={{ color: 'text.secondary' }}>
 											({fShortenNumber(10)}
 											reviews)
 										</Typography>
 									</Stack>
 									<Typography paragraph>
-										{movie.description}
+										{movie.noidung}
 									</Typography>
 									<Divider sx={{ borderStyle: 'dashed' }} />
 									<Stack spacing={2} direction={{ xs: 'column', sm: 'row' }} sx={{ mt: 5 }}>
@@ -184,7 +184,14 @@ export default function MovieDetails() {
 										>
 											Mua vé
 										</Button>
-										<Button fullWidth size="large" type="submit" variant="contained">
+										<Button 
+										fullWidth
+										size="large"
+										type="submit"
+										variant="contained"
+										href={movie.trailer}
+										target="_blank"
+										>
 											Trailer
 										</Button>
 									</Stack>
