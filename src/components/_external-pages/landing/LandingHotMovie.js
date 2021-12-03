@@ -1,6 +1,6 @@
 import Slider from 'react-slick';
 import PropTypes from 'prop-types';
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
@@ -8,18 +8,21 @@ import { Box, Card, Paper, Button, Typography, CardContent, Container, Link, Ico
 import arrowForwardFill from '@iconify/icons-eva/arrow-forward-fill';
 // utils
 import mockData from '../../../utils/mock-data';
+import axios from '../../../utils/axios';
+// hooks
+import useIsMountedRef from '../../../hooks/useIsMountedRef';
 //
 import { varFadeInUp, MotionInView, varFadeInDown } from '../../animate';
 import { CarouselControlsArrowsBasic2 } from '../../carousel/controls';
 
 // ----------------------------------------------------------------------
 
-const MOCK_CAROUSELS = [...Array(5)].map((_, index) => ({
-	id: mockData.id(index),
-	title: mockData.text.title(index),
-	image: mockData.image.feed(index),
-	description: mockData.text.description(index)
-}));
+// const MOCK_CAROUSELS = [...Array(5)].map((_, index) => ({
+// 	id: mockData.id(index),
+// 	title: mockData.text.title(index),
+// 	image: mockData.image.feed(index),
+// 	description: mockData.text.description(index)
+// }));
 
 const RootStyle = styled('div')(({ theme }) => ({
 	overflow: 'hidden',
@@ -46,7 +49,7 @@ CarouselItem.propTypes = {
 };
 
 function CarouselItem({ item, index }) {
-	const { image, title } = item;
+	const { poster, tenphim, maphim } = item;
 
 	return (
 		<Paper
@@ -63,7 +66,7 @@ function CarouselItem({ item, index }) {
 				}
 			}}
 		>
-			<CarouselImgStyle alt={title} src={image} />
+			<CarouselImgStyle alt={tenphim} src={poster} />
 			<CardContent
 				sx={{
 					bottom: 0,
@@ -77,10 +80,10 @@ function CarouselItem({ item, index }) {
 				}}
 			>
 				<Typography variant="h4" paragraph>
-					{title}
+					{tenphim}
 				</Typography>
 				<Link
-					to={`/movies/${index}`}
+					to={`/movies/${maphim}`}
 					color="inherit"
 					variant="overline"
 					component={RouterLink}
@@ -100,8 +103,28 @@ function CarouselItem({ item, index }) {
 	);
 }
 
-export default function CarouselAnimation() {
+export default function LandingHotMovie() {
 	const theme = useTheme();
+	const [movies, setMovies] = useState([]);
+	const isMountedRef = useIsMountedRef();
+
+	console.log(movies);
+
+	const getMovies = useCallback(async () => {
+		try {
+		  const response = await axios.get('/api/phim');
+		  if (isMountedRef.current) {
+			setMovies(response.data.results);
+		  }
+		} catch (err) {
+		  //
+		}
+	  }, [isMountedRef]);
+	
+	  useEffect(() => {
+		getMovies();
+	  }, [getMovies]);
+
 	const carouselRef = useRef();
 	const settings = {
 		slidesToShow: 3,
@@ -150,8 +173,8 @@ export default function CarouselAnimation() {
 				<Card>
 					<CardContent>
 						<Slider ref={carouselRef} {...settings}>
-							{MOCK_CAROUSELS.map((item, index) => (
-								<CarouselItem key={item.title} item={item} index={index} />
+							{movies.map((item, index) => (
+								<CarouselItem key={item.maphim} item={item} index={index} />
 							))}
 						</Slider>
 					</CardContent>

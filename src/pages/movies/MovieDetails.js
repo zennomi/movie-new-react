@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Icon } from '@iconify/react';
 import { sentenceCase } from 'change-case';
 import clockFill from '@iconify/icons-eva/clock-fill';
@@ -12,6 +12,7 @@ import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 // icon
 import roundAddShoppingCart from '@iconify/icons-ic/round-add-shopping-cart';
 // hooks
+import useIsMountedRef from '../../hooks/useIsMountedRef';
 import useSettings from '../../hooks/useSettings';
 // components
 import Page from '../../components/Page';
@@ -19,9 +20,9 @@ import Markdown from '../../components/Markdown';
 import Label from '../../components/Label';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // utils
+import axios from '../../utils/axios';
 import mockData from '../../utils/mock-data';
 import { fShortenNumber, fCurrency } from '../../utils/formatNumber';
-
 
 const MOCK_MOVIES = [...Array(5)].map((_, index) => ({
 	id: mockData.id(index),
@@ -86,7 +87,26 @@ export default function MovieDetails() {
 	const { themeStretch } = useSettings();
 
 	const { maphim } = useParams();
-	const movie = MOCK_MOVIES[maphim];
+
+	const [movie, setMovie] = useState();
+	const isMountedRef = useIsMountedRef();
+
+	const getMovie = useCallback(async () => {
+		try {
+			const response = await axios.get(`/api/phim/${maphim}`);
+			if (isMountedRef.current) {
+				console.log(response.data);
+				setMovie(response.data.result);
+			}
+		} catch (err) {
+			//
+		}
+	}, [isMountedRef]);
+
+	useEffect(() => {
+		getMovie();
+	}, [getMovie]);
+	// const movie = MOCK_MOVIES[maphim];
 
 	const [value, setValue] = useState('1');
 
@@ -97,10 +117,10 @@ export default function MovieDetails() {
 		<Page title={movie?.title}>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<HeaderBreadcrumbs
-					heading={movie?.title}
+					heading={movie?.tenphim}
 					links={[
 						{ name: 'Phim rạp', href: '/movies' },
-						{ name: sentenceCase(movie?.title) }
+						// { name: sentenceCase(movie?.tenphim) }
 					]}
 				/>
 				{movie && (
@@ -109,7 +129,7 @@ export default function MovieDetails() {
 							<Grid container sx={{ p: 2 }} spacing={3}>
 								<Grid item xs={12} md={6} lg={7}>
 									<Card>
-										<img src={movie.image} alt="movie poster" />
+										<img src={movie.poster} alt="movie poster" />
 									</Card>
 									{/* <ProductDetailsCarousel /> */}
 								</Grid>
@@ -135,7 +155,7 @@ export default function MovieDetails() {
 									</Typography>
 
 									<Typography variant="h5" paragraph>
-										{movie.title}
+										{movie.tenphim}
 									</Typography>
 									<Stack spacing={0.5} direction="row" alignItems="center" sx={{ mb: 2 }}>
 										<Rating value={10} precision={0.1} readOnly />
