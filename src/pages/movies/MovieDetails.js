@@ -21,16 +21,7 @@ import Label from '../../components/Label';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // utils
 import axios from '../../utils/axios';
-import mockData from '../../utils/mock-data';
 import { fShortenNumber, fCurrency } from '../../utils/formatNumber';
-
-const MOCK_MOVIES = [...Array(5)].map((_, index) => ({
-	id: mockData.id(index),
-	title: mockData.text.title(index),
-	image: mockData.image.feed(index),
-	short: mockData.role(index),
-	description: mockData.text.description(index),
-}));
 
 // ----------------------------------------------------------------------
 
@@ -67,21 +58,6 @@ const IconWrapperStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const SkeletonLoad = (
-	<Grid container spacing={3}>
-		<Grid item xs={12} md={6} lg={7}>
-			<Skeleton variant="rectangular" width="100%" sx={{ paddingTop: '100%', borderRadius: 2 }} />
-		</Grid>
-		<Grid item xs={12} md={6} lg={5}>
-			<Skeleton variant="circular" width={80} height={80} />
-			<Skeleton variant="text" height={240} />
-			<Skeleton variant="text" height={40} />
-			<Skeleton variant="text" height={40} />
-			<Skeleton variant="text" height={40} />
-		</Grid>
-	</Grid>
-);
-
 export default function MovieDetails() {
 	const theme = useTheme();
 	const { themeStretch } = useSettings();
@@ -105,7 +81,6 @@ export default function MovieDetails() {
 	useEffect(() => {
 		getMovie();
 	}, [getMovie]);
-	// const movie = MOCK_MOVIES[maphim];
 
 	const [value, setValue] = useState('1');
 
@@ -131,10 +106,8 @@ export default function MovieDetails() {
 									<Card>
 										<img src={movie.bia} alt="movie poster" />
 									</Card>
-									{/* <ProductDetailsCarousel /> */}
 								</Grid>
 								<Grid item xs={12} md={9} lg={8}>
-									{/* <ProductDetailsSumary /> */}
 									<Label
 										variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
 										color={movie.ma === 'in_stock' ? 'success' : 'error'}
@@ -177,7 +150,6 @@ export default function MovieDetails() {
 											color="warning"
 											variant="contained"
 											startIcon={<Icon icon={roundAddShoppingCart} />}
-											// onClick={}
 											component={Link}
 											to={`/movies/book?maphim=${maphim}`}
 											sx={{ whiteSpace: 'nowrap' }}

@@ -22,3 +22,9 @@ export function fShortenNumber(number) {
 export function fData(number) {
   return numeral(number).format('0.0 b');
 }
+
+export function fAmountTime(number) {
+  const hour = Math.round(number / 60);
+  const min = number % 60;
+  return `${hour}h${numeral(min).format('00')}m`;
+}

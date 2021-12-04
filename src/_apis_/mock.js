@@ -8,7 +8,7 @@ const routeParams = {
 }
 
 const axiosMockAdapter = new AxiosMockAdapter(axios, {
-  delayResponse: 0
+  delayResponse: 200
 }, routeParams);
 
 export default axiosMockAdapter;

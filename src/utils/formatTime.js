@@ -23,3 +23,7 @@ export function fToNow(date) {
     addSuffix: true
   });
 }
+
+// option (12 - toasn, lys / tuw duy )
+// tien coc
+// hotline chuyen ve sdta a Giang (dang ky tai thay chung toan, hotline)

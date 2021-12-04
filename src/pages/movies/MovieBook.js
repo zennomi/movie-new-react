@@ -22,6 +22,7 @@ import axios from "../../utils/axios";
 // utils
 import mockData from '../../utils/mock-data';
 import { fDate } from '../../utils/formatTime';
+import { fAmountTime } from '../../utils/formatNumber';
 
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';
@@ -41,24 +42,6 @@ const RootStyle = styled('div')(({ theme }) => ({
 	}
 }));
 
-const MOCK_MOVIES = [...Array(8)].map((_, index) => ({
-	id: mockData.id(index),
-	title: mockData.text.title(index),
-	image: mockData.image.feed(index),
-	short: mockData.role(index),
-	description: mockData.text.description(index),
-}));
-
-const MOCK_SLOTS = [...Array(8)].map((_, index) => ({
-	id: mockData.id(index),
-	title: mockData.text.title(index),
-	image: mockData.image.feed(index),
-	short: mockData.role(index),
-	description: mockData.text.description(index),
-}));
-
-const ROWS = 10;
-const COLS = 10;
 const FILLED_SLOTS = [
 	[true, false, true, false, true, false, false, true, false, true],
 	[true, false, true, true, false, false, true, false, true, false],
@@ -83,6 +66,9 @@ export default function MovieBook() {
 	const [movie, setMovie] = useState();
 	const [movies, setMovies] = useState();
 	const [date, setDate] = useState(new Date());
+	const [showtimes, setShowtimes] = useState([]);
+	const [showtime, setShowtime] = useState();
+
 	const [filledSlot, setFilledSlot] = useState([...FILLED_SLOTS]);
 	const [tickets, setTickets] = useState([]);
 
@@ -128,6 +114,15 @@ export default function MovieBook() {
 		}
 	}, [isMountedRef]);
 
+	const getShowtimes = async () => {
+		try {
+			const response = await axios.get(`/api/suat-chieu`, { params: { maphim: movie.ma, ngay: fDate(date) } });
+			setShowtimes(response.data.results);
+		} catch (err) {
+			//
+		}
+	}
+
 	useEffect(() => {
 		if (maphim != null) getMovie();
 	}, [getMovie]);
@@ -135,6 +130,12 @@ export default function MovieBook() {
 	useEffect(() => {
 		getMovies();
 	}, [getMovies]);
+
+	useEffect(() => {
+		if (!movie && !date) return;
+		getShowtimes();
+		return () => setShowtimes([]);
+	}, [movie]);
 
 	return (
 		<Page title="Đặt vé">
@@ -179,6 +180,8 @@ export default function MovieBook() {
 												onChange={(newDate) => { setDate(newDate) }}
 												renderInput={(params) => <TextField {...params} />}
 												sx={{ w: 1 }}
+												disablePast
+												disableMaskedInput
 											/>
 										</LocalizationProvider>
 									</Stack>
@@ -189,34 +192,38 @@ export default function MovieBook() {
 											<Typography variant="h5" sx={{ color: 'primary.main' }}>
 												Các suất chiếu
 											</Typography>
-											{MOCK_SLOTS.map(slot =>
-											(
+											{showtimes.map(s => (
 												<>
 													<Divider />
-													<Grid container spacing={1}>
-														<Grid item>
-															<Chip color="primary" icon={<EventIcon />} label={fDate(date)} size="small" />
-														</Grid>
-
-														<Grid item>
-															<Chip icon={<QueryBuilderIcon />} label="18h00" size="small" />
-														</Grid>
-														<Grid item>
-															<Chip icon={<HourglassEmptyIcon />} label="01h34m" size="small" />
-														</Grid>
-													</Grid>
-													<Grid container spacing={1}>
+													<Grid
+														container
+														spacing={1}
+														style={s.ma === showtime?.ma ? { background: 'gray', cursor: 'pointer' } : { cursor: 'pointer' }}
+														onClick={() => { setShowtime(s) }}
+													>
 														<Grid item xs={2}>
 															<img
-																src={slot.image}
-																alt="Live from space album cover"
+																src={s.phim.bia}
+																alt={s.phim.ten}
 																style={{ width: '100%' }}
 															/>
 														</Grid>
 														<Grid item xs={10}>
 															<Typography>
-																{slot.title}
+																{s.phim.ten}
 															</Typography>
+															<Grid item container spacing={1}>
+																<Grid item>
+																	<Chip color="primary" icon={<EventIcon />} label={fDate(date)} size="small" />
+																</Grid>
+																<Grid item>
+																	<Chip icon={<QueryBuilderIcon />} label={s.ca} size="small" />
+																</Grid>
+																<Grid item>
+																	<Chip icon={<HourglassEmptyIcon />} label={fAmountTime(s.phim.thoigian)} size="small" />
+																</Grid>
+															</Grid>
+
 														</Grid>
 													</Grid>
 												</>
@@ -240,10 +247,11 @@ export default function MovieBook() {
 														</CardContent>
 													</Card>
 													{
-														[...Array(ROWS)].map((_, i) =>
+														showtime &&
+														[...Array(showtime.hang)].map((_, i) =>
 															<Grid container spacing={1} key={i}>
-																{[...Array(COLS)].map((_, j) =>
-																	<Grid item key={j} xs={12 / COLS}>
+																{[...Array(showtime.cot)].map((_, j) =>
+																	<Grid item key={j} xs={12 / showtime.cot}>
 																		<Button
 																			sx={{ minWidth: 0, width: 1 }}
 																			variant="contained"

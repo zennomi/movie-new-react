@@ -9,7 +9,7 @@ const skip = 10;
 export const movies = [...Array(25)].map((_, index) => ({
     ma: index,
     ten: faker.lorem.sentence(),
-    thoigian: faker.datatype.number(),
+    thoigian: faker.datatype.number({min: 60, max: 150}),
     theloai: faker.music.genre(),
     ngonngu: faker.address.country(),
     danhgia: faker.datatype.number({ min: 0, max: 5 }),
@@ -19,10 +19,12 @@ export const movies = [...Array(25)].map((_, index) => ({
 }));
 
 export const showtimes = [...Array(100)].map((_, index) => ({
+    ma: index,
+    phim: movies[faker.datatype.number({min: 0, max: 24})],
     maphong: faker.datatype.number({min:0, max: 5}),
     ca: faker.datatype.number({min:0, max: 5}),
-    hang: faker.datatype.number({min: 10, max: 15}),
-    cot: faker.datatype.number({min: 10, max: 15}),
+    hang: faker.datatype.number({min: 5, max: 10}),
+    cot: faker.datatype.number({min: 5, max: 10}),
 }))
 
 mock.onGet('/api/phim').reply((config) => {
@@ -50,9 +52,10 @@ mock.onGet("/api/phim/:maphim").reply((config) => {
 
 mock.onGet("/api/suat-chieu").reply((config) => {
     try {
-        return [200, {results: showtimes}]
+        const { maphim, ngay } = config.params;
+        return [200, {results: showtimes.filter(s => s.phim.ma === Number(maphim))}]
         
     } catch (error) {
-        
+        console.log(error);
     }
 })
