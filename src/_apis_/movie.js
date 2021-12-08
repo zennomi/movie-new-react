@@ -27,6 +27,18 @@ export const showtimes = [...Array(100)].map((_, index) => ({
     cot: faker.datatype.number({min: 5, max: 10}),
 }))
 
+export const filledSlots = [...Array(100)].map((_, index) => {
+    const {hang, cot} = showtimes[index];
+    const results = [];
+    for (let i = 0; i < cot; i+=1) {
+        results[i] = [];
+        for (let j = 0; j < hang; j+=1) {
+            results[i][j] = faker.datatype.boolean();
+        }
+    }
+    return results;
+})
+
 mock.onGet('/api/phim').reply((config) => {
     try {
         const { page } = config.params || { page: 0 };
@@ -54,6 +66,16 @@ mock.onGet("/api/suat-chieu").reply((config) => {
     try {
         const { maphim, ngay } = config.params;
         return [200, {results: showtimes.filter(s => s.phim.ma === Number(maphim))}]
+        
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+mock.onGet("/api/vi-tri").reply((config) => {
+    try {
+        const { masuatchieu } = config.params;
+        return [200, {results: filledSlots[Number(masuatchieu)]}]
         
     } catch (error) {
         console.log(error);

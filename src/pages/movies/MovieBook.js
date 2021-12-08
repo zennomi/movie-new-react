@@ -26,6 +26,7 @@ import { fAmountTime } from '../../utils/formatNumber';
 
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 
 //
@@ -69,27 +70,21 @@ export default function MovieBook() {
 	const [showtimes, setShowtimes] = useState([]);
 	const [showtime, setShowtime] = useState();
 
-	const [filledSlot, setFilledSlot] = useState([...FILLED_SLOTS]);
+	const [boughtTickets, setBoughtTickets] = useState([]);
+	console.log(boughtTickets);
+
+	const [filledSlots, setFilledSlots] = useState([[]]);
 	const [tickets, setTickets] = useState([]);
 
-	const handleClickSlot = (r, c) => {
-		setFilledSlot((prevFilledSlot) => {
-			const newFilledSlot = [...prevFilledSlot];
-			newFilledSlot[r][c] = true;
-			console.log(newFilledSlot);
-			return newFilledSlot;
+	const handleClickSlot = (showtimeId, r, c) => {
+		setBoughtTickets(prevTickets => {
+			prevTickets.push({showtimeId, r, c});
+			return [...prevTickets];
 		});
-		setTickets((prevTickets) => [...prevTickets, { movie, r, c }])
 	}
 
-	const handleClickRemove = (r, c) => {
-		setFilledSlot((prevFilledSlot) => {
-			const newFilledSlot = [...prevFilledSlot];
-			newFilledSlot[r][c] = false;
-			console.log(newFilledSlot);
-			return newFilledSlot;
-		});
-		setTickets((prevTickets) => prevTickets.filter(ticket => !(ticket.r === r && ticket.c === c)));
+	const handleClickRemove = (showtimeId, r, c) => {
+		setBoughtTickets((prevTickets) => prevTickets.filter(ticket => !(ticket.showtimeId === showtimeId && ticket.r === r && ticket.c === c)));
 	}
 
 	const getMovie = useCallback(async () => {
@@ -123,6 +118,15 @@ export default function MovieBook() {
 		}
 	}
 
+	const getFilledSlots = async () => {
+		try {
+			const response = await axios.get(`/api/vi-tri`, { params: { masuatchieu: showtime.ma } });
+			setFilledSlots(response.data.results);
+		} catch (err) {
+			//
+		}
+	}
+
 	useEffect(() => {
 		if (maphim != null) getMovie();
 	}, [getMovie]);
@@ -136,6 +140,12 @@ export default function MovieBook() {
 		getShowtimes();
 		return () => setShowtimes([]);
 	}, [movie]);
+
+	useEffect(() => {
+		if (!showtime) return;
+		getFilledSlots();
+		return () => setFilledSlots([]);
+	}, [showtime]);
 
 	return (
 		<Page title="Đặt vé">
@@ -247,16 +257,16 @@ export default function MovieBook() {
 														</CardContent>
 													</Card>
 													{
-														showtime &&
-														[...Array(showtime.hang)].map((_, i) =>
+														showtime && filledSlots &&
+														filledSlots.map((x, i) =>
 															<Grid container spacing={1} key={i}>
-																{[...Array(showtime.cot)].map((_, j) =>
-																	<Grid item key={j} xs={12 / showtime.cot}>
+																{x.map((y, j) =>
+																	<Grid item key={j} xs={12 / x.length}>
 																		<Button
 																			sx={{ minWidth: 0, width: 1 }}
 																			variant="contained"
-																			color={filledSlot[i][j] ? "primary" : "inherit"}
-																			onClick={() => { handleClickSlot(i, j) }}
+																			color={y ? "primary" : "inherit"}
+																			onClick={() => { handleClickSlot(showtime.ma, i, j) }}
 																		>
 																			{`${i + 1}-${j + 1}`}
 																		</Button>
@@ -280,7 +290,7 @@ export default function MovieBook() {
 										</Typography>
 										<Stack spacing={1}>
 											{
-												tickets.map(ticket =>
+												boughtTickets.map(ticket =>
 													<Card>
 														<CardContent>
 															<Box sx={{
@@ -288,7 +298,7 @@ export default function MovieBook() {
 															}} >
 																<Box sx={{ flexGrow: 1 }}>
 																	<Typography>
-																		{ticket.movie.title}
+																		{ticket.showtimeId}
 																	</Typography>
 																	<Chip label={`Hàng ${ticket.r}`} />
 																	<Chip label={`Cột ${ticket.c}`} />
@@ -296,7 +306,7 @@ export default function MovieBook() {
 																<Box>
 																	<MFab
 																		color="error"
-																		onClick={() => { handleClickRemove(ticket.r, ticket.c) }}
+																		onClick={() => { handleClickRemove(ticket.showtimeId, ticket.r, ticket.c) }}
 																		size="small"
 																	>
 																		<CancelIcon />
