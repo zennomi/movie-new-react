@@ -42,21 +42,6 @@ const RootStyle = styled('div')(({ theme }) => ({
 	}
 }));
 
-const FILLED_SLOTS = [
-	[true, false, true, false, true, false, false, true, false, true],
-	[true, false, true, true, false, false, true, false, true, false],
-	[true, false, true, false, false, true, true, false, true, false],
-	[true, true, false, false, true, false, true, false, true, false],
-	[true, false, true, false, false, true, true, false, true, false],
-	[true, false, true, false, false, true, true, false, true, false],
-	[true, false, true, false, true, false, false, true, true, false],
-	[true, false, true, false, true, true, false, false, true, false],
-	[true, false, true, false, true, false, true, false, false, true],
-	[true, false, true, false, true, false, true, false, false, true],
-	[true, false, true, false, true, false, true, false, false, true],
-	[true, false, true, false, true, true, false, false, true, false],
-]
-
 export default function MovieBook() {
 	const location = useLocation();
 	const isMountedRef = useIsMountedRef();
@@ -64,26 +49,38 @@ export default function MovieBook() {
 	const maphim = Number(new URLSearchParams(location.search).get("maphim"));
 
 	const [movie, setMovie] = useState();
-	console.log(movie);
 	const [movies, setMovies] = useState();
 	const [date, setDate] = useState(new Date());
 	const [showtimes, setShowtimes] = useState([]);
-	const [showtime, setShowtime] = useState();
-
-	const [boughtTickets, setBoughtTickets] = useState([]);
-
+	const [showtime, setShowtime] = useState({});
 	const [filledSlots, setFilledSlots] = useState([[]]);
-	const [tickets, setTickets] = useState([]);
+
+	const [boughtTickets, setBoughtTickets] = useLocalStorage("tickets", {});
 
 	const handleClickSlot = (showtimeId, r, c) => {
 		setBoughtTickets(prevTickets => {
-			prevTickets.push({showtimeId, r, c});
-			return [...prevTickets];
+			if (!prevTickets[showtimeId]) prevTickets[showtimeId] = [];
+			prevTickets[showtimeId].push({ r, c });
+			return { ...prevTickets };
 		});
+		setFilledSlots(slots => {
+			slots[r][c] = true;
+			return [...slots];
+		})
 	}
 
 	const handleClickRemove = (showtimeId, r, c) => {
-		setBoughtTickets((prevTickets) => prevTickets.filter(ticket => !(ticket.showtimeId === showtimeId && ticket.r === r && ticket.c === c)));
+		setBoughtTickets((prevTickets) => {
+			prevTickets[showtimeId] = [...prevTickets[showtimeId].filter(ticket => !(ticket.r === r && ticket.c === c))];
+			return {...prevTickets};
+		})
+		console.log(showtimeId, showtime.ma);
+		if (showtimeId.toString() === showtime.ma.toString()) {
+			setFilledSlots(slots => {
+				slots[r][c] = false;
+				return [...slots];
+			})
+		}
 	}
 
 	const getMovie = useCallback(async () => {
@@ -120,6 +117,12 @@ export default function MovieBook() {
 	const getFilledSlots = async () => {
 		try {
 			const response = await axios.get(`/api/vi-tri`, { params: { masuatchieu: showtime.ma } });
+			const {results} = response.data;
+			if (boughtTickets[showtime.ma]) {
+				boughtTickets[showtime.ma].forEach(({r,c}) => {
+					results[r][c] = true;
+				})
+			}
 			setFilledSlots(response.data.results);
 		} catch (err) {
 			//
@@ -181,7 +184,7 @@ export default function MovieBook() {
 												setMovie(newMovie);
 												if (reason === 'clear') {
 													console.log("clear1");
-													setMovie({ma: null, ten: ''});
+													setMovie({ ma: null, ten: '' });
 												}
 											}}
 											key={movie && movie.ten}
@@ -273,7 +276,7 @@ export default function MovieBook() {
 																			sx={{ minWidth: 0, width: 1 }}
 																			variant="contained"
 																			color={y ? "primary" : "inherit"}
-																			onClick={() => { handleClickSlot(showtime.ma, i, j) }}
+																			onClick={() => {if (!y) handleClickSlot(showtime.ma, i, j) }}
 																		>
 																			{`${i + 1}-${j + 1}`}
 																		</Button>
@@ -297,32 +300,33 @@ export default function MovieBook() {
 										</Typography>
 										<Stack spacing={1}>
 											{
-												boughtTickets.map(ticket =>
-													<Card>
-														<CardContent>
-															<Box sx={{
-																display: 'flex', p: 1, bgcolor: 'background.paper'
-															}} >
-																<Box sx={{ flexGrow: 1 }}>
-																	<Typography>
-																		{ticket.showtimeId}
-																	</Typography>
-																	<Chip label={`Hàng ${ticket.r}`} />
-																	<Chip label={`Cột ${ticket.c}`} />
+												Object.keys(boughtTickets).map(key =>
+													boughtTickets[key].map(ticket =>
+														<Card>
+															<CardContent>
+																<Box sx={{
+																	display: 'flex', p: 1, bgcolor: 'background.paper'
+																}} >
+																	<Box sx={{ flexGrow: 1 }}>
+																		<Typography>
+																			{key}
+																		</Typography>
+																		<Chip label={`Hàng ${ticket.r+1}`} />
+																		<Chip label={`Cột ${ticket.c+1}`} />
+																	</Box>
+																	<Box>
+																		<MFab
+																			color="error"
+																			onClick={() => { handleClickRemove(key, ticket.r, ticket.c) }}
+																			size="small"
+																		>
+																			<CancelIcon />
+																		</MFab>
+																	</Box>
 																</Box>
-																<Box>
-																	<MFab
-																		color="error"
-																		onClick={() => { handleClickRemove(ticket.showtimeId, ticket.r, ticket.c) }}
-																		size="small"
-																	>
-																		<CancelIcon />
-																	</MFab>
-																</Box>
-															</Box>
-														</CardContent>
-													</Card>
-												)
+															</CardContent>
+														</Card>
+													))
 											}
 										</Stack>
 									</CardContent>
