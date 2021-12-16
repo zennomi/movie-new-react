@@ -3,13 +3,15 @@ import faker from 'faker';
 import mock from './mock';
 // utils
 import mockData from '../utils/mock-data';
+import { fDate } from '../utils/formatTime';
+
 
 const skip = 10;
 
 export const movies = [...Array(25)].map((_, index) => ({
     ma: index,
     ten: faker.lorem.sentence(),
-    thoigian: faker.datatype.number({min: 60, max: 150}),
+    thoigian: faker.datatype.number({ min: 60, max: 150 }),
     theloai: faker.music.genre(),
     ngonngu: faker.address.country(),
     danhgia: faker.datatype.number({ min: 0, max: 5 }),
@@ -18,21 +20,22 @@ export const movies = [...Array(25)].map((_, index) => ({
     bia: faker.image.imageUrl(900, 1600, 'food', true)
 }));
 
-export const showtimes = [...Array(100)].map((_, index) => ({
+export const showtimes = [...Array(200)].map((_, index) => ({
     ma: index,
-    phim: movies[faker.datatype.number({min: 0, max: 24})],
-    maphong: faker.datatype.number({min:0, max: 5}),
-    ca: faker.datatype.number({min:0, max: 5}),
-    hang: faker.datatype.number({min: 5, max: 10}),
-    cot: faker.datatype.number({min: 5, max: 10}),
+    phim: movies[faker.datatype.number({ min: 0, max: 24 })],
+    maphong: faker.datatype.number({ min: 0, max: 5 }),
+    ngay: fDate((new Date()).valueOf() + 24 * 60 * 60 * 1000 * faker.datatype.number({ min: 0, max: 5 })), // dd/MM/YY
+    ca: faker.datatype.number({ min: 0, max: 5 }),
+    hang: faker.datatype.number({ min: 5, max: 10 }),
+    cot: faker.datatype.number({ min: 5, max: 10 }),
 }))
 
-export const filledSlots = [...Array(100)].map((_, index) => {
-    const {hang, cot} = showtimes[index];
+export const filledSlots = [...Array(200)].map((_, index) => {
+    const { hang, cot } = showtimes[index];
     const results = [];
-    for (let i = 0; i < cot; i+=1) {
+    for (let i = 0; i < cot; i += 1) {
         results[i] = [];
-        for (let j = 0; j < hang; j+=1) {
+        for (let j = 0; j < hang; j += 1) {
             results[i][j] = faker.datatype.boolean();
         }
     }
@@ -65,8 +68,9 @@ mock.onGet("/api/phim/:maphim").reply((config) => {
 mock.onGet("/api/suat-chieu").reply((config) => {
     try {
         const { maphim, ngay } = config.params;
-        return [200, {results: showtimes.filter(s => s.phim.ma === Number(maphim))}]
-        
+        console.log(config.params);
+        if (maphim) return [200, { results: showtimes.filter(s => s.phim.ma === Number(maphim) && s.ngay === ngay) }];
+        return [200, { results: showtimes.filter(s => s.ngay === ngay).slice(0, 10) }];
     } catch (error) {
         console.log(error);
     }
@@ -75,8 +79,8 @@ mock.onGet("/api/suat-chieu").reply((config) => {
 mock.onGet("/api/vi-tri").reply((config) => {
     try {
         const { masuatchieu } = config.params;
-        return [200, {results: filledSlots[Number(masuatchieu)]}]
-        
+        return [200, { results: filledSlots[Number(masuatchieu)] }]
+
     } catch (error) {
         console.log(error);
     }

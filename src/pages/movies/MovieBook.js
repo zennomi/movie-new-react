@@ -6,7 +6,7 @@ import {
 	Box, Card, Chip, Button, Divider, Typography, CardContent,
 	Container, Link, Fab, Grid, Stack, Autocomplete, TextField
 } from '@material-ui/core';
-import { DesktopDatePicker, LocalizationProvider } from '@material-ui/lab';
+import { StaticDatePicker, LocalizationProvider } from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import EventIcon from '@material-ui/icons/Event';
 import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
@@ -20,7 +20,6 @@ import MFab from "../../components/@material-extend/MFab";
 import axios from "../../utils/axios";
 
 // utils
-import mockData from '../../utils/mock-data';
 import { fDate } from '../../utils/formatTime';
 import { fAmountTime } from '../../utils/formatNumber';
 
@@ -65,13 +64,13 @@ export default function MovieBook() {
 	const maphim = Number(new URLSearchParams(location.search).get("maphim"));
 
 	const [movie, setMovie] = useState();
+	console.log(movie);
 	const [movies, setMovies] = useState();
 	const [date, setDate] = useState(new Date());
 	const [showtimes, setShowtimes] = useState([]);
 	const [showtime, setShowtime] = useState();
 
 	const [boughtTickets, setBoughtTickets] = useState([]);
-	console.log(boughtTickets);
 
 	const [filledSlots, setFilledSlots] = useState([[]]);
 	const [tickets, setTickets] = useState([]);
@@ -139,7 +138,7 @@ export default function MovieBook() {
 		if (!movie && !date) return;
 		getShowtimes();
 		return () => setShowtimes([]);
-	}, [movie]);
+	}, [movie, date]);
 
 	useEffect(() => {
 		if (!showtime) return;
@@ -178,12 +177,20 @@ export default function MovieBook() {
 											isOptionEqualToValue={(option, value) => option.ten === value.ten}
 											renderInput={(params) => <TextField {...params} label="Phim" />}
 											value={movie}
-											onChange={(event, newMovie) => { setMovie(newMovie) }}
+											onChange={(event, newMovie, reason) => {
+												setMovie(newMovie);
+												if (reason === 'clear') {
+													console.log("clear1");
+													setMovie({ma: null, ten: ''});
+												}
+											}}
 											key={movie && movie.ten}
 											sx={{ w: 1 }}
 										/>
 										<LocalizationProvider dateAdapter={AdapterDateFns}>
-											<DesktopDatePicker
+											<StaticDatePicker
+												displayStaticWrapperAs="desktop"
+												clearable="true"
 												label="Ngày"
 												inputFormat="dd/MM/yyyy"
 												value={date}
@@ -224,7 +231,7 @@ export default function MovieBook() {
 															</Typography>
 															<Grid item container spacing={1}>
 																<Grid item>
-																	<Chip color="primary" icon={<EventIcon />} label={fDate(date)} size="small" />
+																	<Chip color="primary" icon={<EventIcon />} label={s.ngay} size="small" />
 																</Grid>
 																<Grid item>
 																	<Chip icon={<QueryBuilderIcon />} label={s.ca} size="small" />
