@@ -42,6 +42,8 @@ export const filledSlots = [...Array(200)].map((_, index) => {
     return results;
 })
 
+const shift = ["06:00", "09:00", "12:00", "15:00", "18:00", "21:00"];
+
 mock.onGet('/api/phim').reply((config) => {
     try {
         const { page } = config.params || { page: 0 };
@@ -81,6 +83,24 @@ mock.onGet("/api/vi-tri").reply((config) => {
         const { masuatchieu } = config.params;
         return [200, { results: filledSlots[Number(masuatchieu)] }]
 
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+mock.onPost("/api/ve").reply((config) => {
+    try {
+        const tickets = JSON.parse(config.data);
+        const detailedTickets = [];
+        console.log(tickets);
+        Object.keys(tickets).forEach(showtimeId => {
+            const suatchieu = showtimes[showtimeId];
+            console.log(tickets[showtimeId])
+            tickets[showtimeId].forEach(v => {
+                detailedTickets.push({phim: suatchieu.phim, suatchieu: {...suatchieu, gio: shift[suatchieu.ca]}, hang: v.r, cot: v.c, gia: faker.datatype.number({min: 10, max: 15}) * 1e4})
+            });
+        })
+        return [200, {results: detailedTickets}];
     } catch (error) {
         console.log(error);
     }

@@ -26,8 +26,8 @@ const Loadable = (Component) => (props) => {
               position: 'fixed'
             })
           }}
-          />
-        }
+        />
+      }
     >
       <Component {...props} />
     </Suspense>
@@ -63,7 +63,7 @@ export default function Router() {
             { path: '*', element: <Navigate to="/404" replace /> },
           ]
         },
-        
+        { path: 'checkout', element: <Checkout /> }
       ]
     },
     { path: '*', element: <Navigate to="/404" replace /> }
@@ -79,5 +79,6 @@ const MovieBook = Loadable(lazy(() => import('../pages/movies/MovieBook')));
 // Main
 const MoviesLayout = Loadable(lazy(() => import('../layouts/movies')));
 const LandingPage = Loadable(lazy(() => import('../pages/LandingPage')));
+const Checkout = Loadable(lazy(() => import('../pages/Checkout')));
 const LandingHotMovie = Loadable(lazy(() => import('../components/_external-pages/landing/LandingHotMovie')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));

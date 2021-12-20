@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 // material
-import { alpha, useTheme, styled } from '@material-ui/core/styles';
+import { styled } from '@material-ui/core/styles';
 import {
 	Box, Card, Chip, Button, Divider, Typography, CardContent,
-	Container, Link, Fab, Grid, Stack, Autocomplete, TextField
+	Container,  Grid, Stack, Autocomplete, TextField
 } from '@material-ui/core';
 import { StaticDatePicker, LocalizationProvider } from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
@@ -27,13 +27,9 @@ import { fAmountTime } from '../../utils/formatNumber';
 
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';
-import useLocalStorage from '../../hooks/useLocalStorage';
-
 
 //
 import { varFadeInUp, MotionInView, varFadeInDown } from '../../components/animate';
-import Label from '../../components/Label';
-
 
 const RootStyle = styled('div')(({ theme }) => ({
 	overflow: 'hidden',

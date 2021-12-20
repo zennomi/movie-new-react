@@ -41,7 +41,7 @@ export default function CartWidget() {
     //   const totalItems = sum(checkout.cart.map((item) => item.quantity));
     console.log(tickets);
     return (
-        <RootStyle to="/thanh-toan">
+        <RootStyle to="/checkout">
             <Badge showZero badgeContent={total} color="error" max={99}>
                 <Icon icon={shoppingCartFill} width={24} height={24} />
             </Badge>

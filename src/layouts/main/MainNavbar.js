@@ -78,8 +78,8 @@ export default function MainNavbar() {
             <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />
           </MHidden>
 
-          <Button variant="contained" target="_blank" href="https://material-ui.com/store/items/minimal-dashboard/">
-            Giỏ vé
+          <Button variant="contained" target="_blank" href="https://github.com/zennomi/movie-new-react">
+            Github
           </Button>
 
           <MHidden width="mdUp">
