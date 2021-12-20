@@ -15,7 +15,9 @@ import CancelIcon from '@material-ui/icons/Cancel';
 // components
 import Page from "../../components/Page";
 import MFab from "../../components/@material-extend/MFab";
-
+// redux
+import { useDispatch, useSelector } from '../../redux/store';
+import { addTicket, removeTicket } from '../../redux/slices/ticket';
 // axios
 import axios from "../../utils/axios";
 
@@ -45,6 +47,8 @@ const RootStyle = styled('div')(({ theme }) => ({
 export default function MovieBook() {
 	const location = useLocation();
 	const isMountedRef = useIsMountedRef();
+	const dispatch = useDispatch();
+
 
 	const maphim = Number(new URLSearchParams(location.search).get("maphim"));
 
@@ -55,14 +59,10 @@ export default function MovieBook() {
 	const [showtime, setShowtime] = useState({});
 	const [filledSlots, setFilledSlots] = useState([[]]);
 
-	const [boughtTickets, setBoughtTickets] = useLocalStorage("tickets", {});
+    const { tickets } = useSelector((state) => state.ticket);
 
 	const handleClickSlot = (showtimeId, r, c) => {
-		setBoughtTickets(prevTickets => {
-			if (!prevTickets[showtimeId]) prevTickets[showtimeId] = [];
-			prevTickets[showtimeId].push({ r, c });
-			return { ...prevTickets };
-		});
+		dispatch(addTicket({showtimeId, r, c}))
 		setFilledSlots(slots => {
 			slots[r][c] = true;
 			return [...slots];
@@ -70,12 +70,8 @@ export default function MovieBook() {
 	}
 
 	const handleClickRemove = (showtimeId, r, c) => {
-		setBoughtTickets((prevTickets) => {
-			prevTickets[showtimeId] = [...prevTickets[showtimeId].filter(ticket => !(ticket.r === r && ticket.c === c))];
-			return {...prevTickets};
-		})
-		console.log(showtimeId, showtime.ma);
-		if (showtimeId.toString() === showtime.ma.toString()) {
+		dispatch(removeTicket({showtimeId, r, c}))
+		if (showtime.ma && showtimeId.toString() === showtime.ma.toString()) {
 			setFilledSlots(slots => {
 				slots[r][c] = false;
 				return [...slots];
@@ -118,8 +114,8 @@ export default function MovieBook() {
 		try {
 			const response = await axios.get(`/api/vi-tri`, { params: { masuatchieu: showtime.ma } });
 			const {results} = response.data;
-			if (boughtTickets[showtime.ma]) {
-				boughtTickets[showtime.ma].forEach(({r,c}) => {
+			if (tickets[showtime.ma]) {
+				tickets[showtime.ma].forEach(({r,c}) => {
 					results[r][c] = true;
 				})
 			}
@@ -300,8 +296,8 @@ export default function MovieBook() {
 										</Typography>
 										<Stack spacing={1}>
 											{
-												Object.keys(boughtTickets).map(key =>
-													boughtTickets[key].map(ticket =>
+												Object.keys(tickets).map(key =>
+													tickets[key].map(ticket =>
 														<Card>
 															<CardContent>
 																<Box sx={{

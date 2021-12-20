@@ -3,6 +3,7 @@ import { styled } from '@material-ui/core/styles';
 import { Outlet } from 'react-router-dom';
 // components
 import Page from '../../components/Page';
+import CartWidget from "../../components/CartWidget";
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ export default function LandingPage() {
 		<RootStyle title="Phim đang chiếu rạp" id="move_top">
 			<ContentStyle>
 				<Outlet />
+				<CartWidget />
 			</ContentStyle>
 		</RootStyle>
 	);
