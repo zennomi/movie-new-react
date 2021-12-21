@@ -39,7 +39,6 @@ const RootStyle = styled(RouterLink)(({ theme }) => ({
 export default function CartWidget() {
     const { tickets, total } = useSelector((state) => state.ticket);
     //   const totalItems = sum(checkout.cart.map((item) => item.quantity));
-    console.log(tickets);
     return (
         <RootStyle to="/checkout">
             <Badge showZero badgeContent={total} color="error" max={99}>

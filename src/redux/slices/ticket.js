@@ -48,15 +48,15 @@ const slice = createSlice({
             const { showtimeId, r, c } = action.payload;
             if (!state.tickets[showtimeId]) state.tickets[showtimeId] = [];
             state.tickets[showtimeId].push({ r, c });
-            state.total += 1;
+            state.total = Object.keys(state.tickets).map(key => state.tickets[key].length).reduce((a, b) => a + b, 0);
         },
 
         // REMOVE TICKET
         removeTicket(state, action) {
             const { showtimeId, r, c } = action.payload;
-            console.log(action.payload, state.tickets[showtimeId]);
+            console.log({ payload: action.payload }, state.tickets[showtimeId]);
             state.tickets[showtimeId] = [...state.tickets[showtimeId].filter(ticket => !(ticket.r === r && ticket.c === c))];
-            state.total -= 1;
+            state.total = Object.keys(state.tickets).map(key => state.tickets[key].length).reduce((a, b) => a + b, 0);
         },
 
         resetCart(state) {
@@ -76,7 +76,6 @@ const slice = createSlice({
         applyDiscount(state, action) {
             const discount = action.payload;
             state.checkout.discount = discount;
-            state.checkout.total = state.checkout.subtotal - discount;
         },
     }
 })

@@ -38,7 +38,8 @@ export default function CheckoutSummary({
   shipping = null,
   onApplyDiscount,
   enableEdit = false,
-  enableDiscount = false
+  enableDiscount = false,
+  detailedTickets
 }) {
   const displayShipping = shipping !== null ? 'Free' : '-';
 
@@ -59,48 +60,22 @@ export default function CheckoutSummary({
         <Stack spacing={2}>
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Sub Total
+              Số vé còn trống
             </Typography>
-            <Typography variant="subtitle2">{fCurrency(subtotal)}</Typography>
+            <Typography variant="subtitle2">{detailedTickets.filter(t => t.trong).length}</Typography>
           </Stack>
-
-          <Stack direction="row" justifyContent="space-between">
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Discount
-            </Typography>
-            <Typography variant="subtitle2">{discount ? fCurrency(-discount) : '-'}</Typography>
-          </Stack>
-
           <Divider />
-
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="subtitle1">Total</Typography>
             <Box sx={{ textAlign: 'right' }}>
               <Typography variant="subtitle1" sx={{ color: 'error.main' }}>
-                {fCurrency(total)}
+                {fCurrency(detailedTickets.filter(t => t.trong).map(t => t.gia).reduce((a, b) => a+b, 0) - discount )}
               </Typography>
               <Typography variant="caption" sx={{ fontStyle: 'italic' }}>
                 (VAT included if applicable)
               </Typography>
             </Box>
           </Stack>
-
-          {enableDiscount && (
-            <TextField
-              fullWidth
-              placeholder="Discount codes / Gifts"
-              value="DISCOUNT5"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Button type="button" onClick={() => onApplyDiscount(5)} sx={{ mr: -0.5 }}>
-                      Apply
-                    </Button>
-                  </InputAdornment>
-                )
-              }}
-            />
-          )}
         </Stack>
       </CardContent>
     </Card>

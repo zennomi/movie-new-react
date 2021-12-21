@@ -38,17 +38,22 @@ ProductList.propTypes = {
 
 };
 
-export default function ProductList({ detailedTickets, onDelete }) {
-
+export default function ProductList({ detailedTickets, onDelete, activeStep }) {
+    console.log(activeStep);
 
     return (
         <TableContainer sx={{ minWidth: 720 }}>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell align="left">Price</TableCell>
-                        <TableCell align="right" />
+                        <TableCell>Vé</TableCell>
+                        <TableCell align="left">Giá</TableCell>
+                        {activeStep === 0 &&
+                            <>
+                                <TableCell align="left">Trạng thái</TableCell>
+                                <TableCell align="right" />
+                            </>
+                        }
                     </TableRow>
                 </TableHead>
 
@@ -56,7 +61,7 @@ export default function ProductList({ detailedTickets, onDelete }) {
                     {detailedTickets.map((ticket) => {
                         const { phim, suatchieu, hang, cot, gia } = ticket;
                         return (
-                            <TableRow key={suatchieu.ma + hang + cot}>
+                            <TableRow key={`${suatchieu.ma}-${hang}-${cot}`}>
                                 <TableCell>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <ThumbImgStyle alt="product image" src={phim.bia} />
@@ -82,7 +87,7 @@ export default function ProductList({ detailedTickets, onDelete }) {
                                                     <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
                                                         Vị trí::&nbsp;
                                                     </Typography>
-                                                    {`${ticket.hang+1}-${ticket.cot+1}`}
+                                                    {`${ticket.hang + 1}-${ticket.cot + 1}`}
                                                 </Typography>
                                             </Stack>
                                         </Box>
@@ -90,12 +95,17 @@ export default function ProductList({ detailedTickets, onDelete }) {
                                 </TableCell>
 
                                 <TableCell align="left">{fCurrency(gia)}</TableCell>
+                                {activeStep === 0 &&
+                                    <><TableCell align="left">{ticket.trong ? <Typography sx={{ color: 'success.main' }}>Trống</Typography> : <Typography sx={{ color: 'error.main' }}>Đã hết</Typography>}</TableCell>
 
-                                <TableCell align="right">
-                                    <MIconButton onClick={() => onDelete({ showtimeId: suatchieu.ma, r: hang, c: cot })}>
-                                        <Icon icon={trash2Fill} width={20} height={20} />
-                                    </MIconButton>
-                                </TableCell>
+                                        <TableCell align="right">
+                                            <MIconButton onClick={() => onDelete({ showtimeId: suatchieu.ma, r: hang, c: cot })}>
+                                                <Icon icon={trash2Fill} width={20} height={20} />
+                                            </MIconButton>
+                                        </TableCell>
+                                    </>
+                                }
+
                             </TableRow>
                         );
                     })}

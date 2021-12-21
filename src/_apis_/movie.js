@@ -92,12 +92,27 @@ mock.onPost("/api/ve").reply((config) => {
     try {
         const tickets = JSON.parse(config.data);
         const detailedTickets = [];
-        console.log(tickets);
         Object.keys(tickets).forEach(showtimeId => {
             const suatchieu = showtimes[showtimeId];
-            console.log(tickets[showtimeId])
             tickets[showtimeId].forEach(v => {
-                detailedTickets.push({phim: suatchieu.phim, suatchieu: {...suatchieu, gio: shift[suatchieu.ca]}, hang: v.r, cot: v.c, gia: faker.datatype.number({min: 10, max: 15}) * 1e4})
+                detailedTickets.push({phim: suatchieu.phim, suatchieu: {...suatchieu, gio: shift[suatchieu.ca]}, hang: v.r, cot: v.c, gia: faker.datatype.number({min: 10, max: 15}) * 1e4, trong: faker.datatype.number({max: 5}) > 1})
+            });
+        })
+        return [200, {results: detailedTickets}];
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+mock.onPost("/api/dat-ve").reply((config) => {
+    // tạm thời tạo vé, nếu không thanh toán xong thì xoá
+    try {
+        const tickets = JSON.parse(config.data);
+        const detailedTickets = [];
+        Object.keys(tickets).forEach(showtimeId => {
+            const suatchieu = showtimes[showtimeId];
+            tickets[showtimeId].forEach(v => {
+                if (faker.datatype.number({max: 5}) > 1) detailedTickets.push({phim: suatchieu.phim, suatchieu: {...suatchieu, gio: shift[suatchieu.ca]}, hang: v.r, cot: v.c, gia: faker.datatype.number({min: 10, max: 15}) * 1e4 })
             });
         })
         return [200, {results: detailedTickets}];

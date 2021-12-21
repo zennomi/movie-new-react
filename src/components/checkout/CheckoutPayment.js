@@ -1,3 +1,5 @@
+import * as Yup from 'yup';
+import { useSnackbar } from 'notistack5';
 import { useEffect, useState, useCallback } from 'react';
 import { sum } from 'lodash';
 import { Icon } from '@iconify/react';
@@ -17,7 +19,7 @@ import {
 //
 import Scrollbar from '../Scrollbar';
 import EmptyContent from '../EmptyContent';
-import CheckoutSummary from './CheckoutSummary';
+import PaymentMethods from './PaymentMethods';
 import CheckoutTicketList from './CheckoutTicketList';
 
 // axios
@@ -28,7 +30,9 @@ import useIsMountedRef from '../../hooks/useIsMountedRef';
 
 // ----------------------------------------------------------------------
 
-export default function CheckoutCart() {
+export default function CheckoutPayment() {
+    const { enqueueSnackbar } = useSnackbar();
+
     const dispatch = useDispatch();
     const isMountedRef = useIsMountedRef();
 
@@ -49,25 +53,72 @@ export default function CheckoutCart() {
         dispatch(applyDiscount(value));
     };
 
-    // const formik = useFormik({
-    //     enableReinitialize: true,
-    //     initialValues: { products: cart },
-    //     onSubmit: async (values, { setErrors, setSubmitting }) => {
-    //         try {
-    //             setSubmitting(true);
-    //             handleNextStep();
-    //         } catch (error) {
-    //             console.error(error);
-    //             setErrors(error.message);
-    //         }
-    //     }
-    // });
+    const PaymentSchema = Yup.object().shape({
 
-    // const { values, handleSubmit } = formik;
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            method: 'paypal',
+            card: 'mastercard',
+            newCardName: '',
+            newCardNumber: '',
+            newCardExpired: '',
+            newCardCvv: ''
+        },
+        validationSchema: PaymentSchema,
+        onSubmit: async (values, { resetForm }) => {
+            const submitData = {
+
+            };
+            if (values.method === 'paypal') {
+                alert(
+                    JSON.stringify(
+                        {
+                            ...submitData,
+                            method: values.method
+                        },
+                        null,
+                        2
+                    )
+                );
+            } else if (values.method !== 'paypal' && !values.newCardName) {
+                alert(
+                    JSON.stringify(
+                        {
+                            ...submitData,
+                            method: values.method,
+                            card: values.card
+                        },
+                        null,
+                        2
+                    )
+                );
+            }
+            if (values.newCardName) {
+                alert(
+                    JSON.stringify(
+                        {
+                            ...submitData,
+                            method: values.method,
+                            newCardName: values.newCardName,
+                            newCardNumber: values.newCardNumber,
+                            newCardExpired: values.newCardExpired,
+                            newCardCvv: values.newCardCvv
+                        },
+                        null,
+                        2
+                    )
+                );
+            }
+            resetForm();
+            enqueueSnackbar('Payment success', { variant: 'success' });
+        }
+    });
 
     const getTickets = useCallback(async () => {
         try {
-            const response = await axios.post(`/api/ve`, tickets);
+            const response = await axios.post(`/api/dat-ve`, tickets);
             if (isMountedRef.current) {
                 setTickets(response.data.results);
             }
@@ -103,7 +154,6 @@ export default function CheckoutCart() {
                             <CheckoutTicketList
                                 detailedTickets={detailedTickets}
                                 onDelete={handleRemoveTicket}
-                                activeStep={activeStep}
                             />
                         </Scrollbar>
                     ) : (
@@ -126,21 +176,16 @@ export default function CheckoutCart() {
             </Grid>
 
             <Grid item xs={12} md={4}>
-                <CheckoutSummary
-                    total={total}
-                    enableDiscount
-                    discount={discount}
-                    subtotal={subtotal}
-                    onApplyDiscount={handleApplyDiscount}
-                    detailedTickets={detailedTickets}
+                <PaymentMethods
+                    formik={formik}
                 />
                 <Button
                     fullWidth
                     size="large"
                     variant="contained"
                     disabled={detailedTickets.filter(t => t.trong).length === 0}
-                    onClick={() => {handleNextStep()}}
-                    >
+                    onClick={() => { handleNextStep() }}
+                >
                     Thanh toán
                 </Button>
             </Grid>

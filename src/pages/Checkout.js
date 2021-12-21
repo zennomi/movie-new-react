@@ -16,11 +16,12 @@ import useSettings from '../hooks/useSettings';
 import Page from '../components/Page';
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumbs';
 import CheckoutCart from '../components/checkout/CheckoutCart';
+import CheckoutPayment from '../components/checkout/CheckoutPayment';
 import CheckoutOrderComplete from '../components/checkout/CheckoutOrderComplete';
 
 // ----------------------------------------------------------------------
 
-const STEPS = ['Cart', 'Billing & address', 'Payment'];
+const STEPS = ['Giỏ vé', 'Thanh toán', 'Nhận vé'];
 
 const RootStyle = styled(Page)({
 	marginTop: '100px',
@@ -132,7 +133,7 @@ export default function EcommerceCheckout() {
         {!isComplete ? (
           <>
             {activeStep === 0 && <CheckoutCart />}
-            {activeStep === 1 && <CheckoutCart />}
+            {activeStep === 1 && <CheckoutPayment />}
             {activeStep === 2 && billing && <CheckoutCart />}
           </>
         ) : (
