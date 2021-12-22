@@ -39,8 +39,6 @@ ProductList.propTypes = {
 };
 
 export default function ProductList({ detailedTickets, onDelete, activeStep }) {
-    console.log(activeStep);
-
     return (
         <TableContainer sx={{ minWidth: 720 }}>
             <Table>

@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import checkmarkCircle2Fill from '@iconify/icons-eva/checkmark-circle-2-fill';
 import infoFill from '@iconify/icons-eva/info-fill';
@@ -39,12 +39,8 @@ const PAYMENT_OPTIONS = [
 ];
 
 const RootStyle = styled('div')(({ theme }) => ({
-    padding: theme.spacing(3),
-    [theme.breakpoints.up('md')]: {
-        padding: 0,
-        paddingTop: theme.spacing(5)
-    },
-    marginBottom: theme.spacing(5)
+    marginBottom: theme.spacing(5),
+    marginTop: theme.spacing(5)
 }));
 
 const OptionStyle = styled(Paper)(({ theme }) => ({
@@ -69,20 +65,9 @@ export default function PaymentMethods({ formik }) {
 
     const { values, getFieldProps } = formik;
 
-    const handleCollapseIn = () => {
-        setShow((prev) => !prev);
-    };
-
-    const handleCollapseOut = () => {
-        setShow(false);
-    };
 
     return (
         <RootStyle>
-            <Typography variant="subtitle1" sx={{ mb: 5 }}>
-                Payment Method
-            </Typography>
-
             <RadioGroup {...getFieldProps('method')}>
                 <Stack spacing={3}>
                     {PAYMENT_OPTIONS.map((method) => {

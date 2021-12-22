@@ -1,19 +1,20 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack5';
 import { useEffect, useState, useCallback } from 'react';
+import Countdown, { zeroPad } from 'react-countdown';
 import { sum } from 'lodash';
 import { Icon } from '@iconify/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useFormik, Form, FormikProvider } from 'formik';
 import arrowIosBackFill from '@iconify/icons-eva/arrow-ios-back-fill';
 // material
-import { Grid, Card, Button, CardHeader, Typography } from '@material-ui/core';
+import { Grid, Card, Button, CardHeader, Typography, CardContent } from '@material-ui/core';
+import { LoadingButton } from '@material-ui/lab';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import {
-    removeTicket,
     onNextStep,
-    applyDiscount,
+    onBackStep
 } from '../../redux/slices/ticket';
 
 //
@@ -37,21 +38,11 @@ export default function CheckoutPayment() {
     const isMountedRef = useIsMountedRef();
 
     const [detailedTickets, setTickets] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const { checkout, total, tickets } = useSelector((state) => state.ticket);
     const { cart, discount, subtotal, activeStep } = checkout;
     const isEmptyCart = total === 0;
 
-    const handleRemoveTicket = (ticket) => {
-        dispatch(removeTicket(ticket));
-    };
-
-    const handleNextStep = () => {
-        dispatch(onNextStep());
-    };
-
-    const handleApplyDiscount = (value) => {
-        dispatch(applyDiscount(value));
-    };
 
     const PaymentSchema = Yup.object().shape({
 
@@ -68,6 +59,7 @@ export default function CheckoutPayment() {
         },
         validationSchema: PaymentSchema,
         onSubmit: async (values, { resetForm }) => {
+            setIsLoading(true);
             const submitData = {
 
             };
@@ -82,20 +74,7 @@ export default function CheckoutPayment() {
                         2
                     )
                 );
-            } else if (values.method !== 'paypal' && !values.newCardName) {
-                alert(
-                    JSON.stringify(
-                        {
-                            ...submitData,
-                            method: values.method,
-                            card: values.card
-                        },
-                        null,
-                        2
-                    )
-                );
-            }
-            if (values.newCardName) {
+            } else {
                 alert(
                     JSON.stringify(
                         {
@@ -113,6 +92,7 @@ export default function CheckoutPayment() {
             }
             resetForm();
             enqueueSnackbar('Payment success', { variant: 'success' });
+            // dispatch(onNextStep());
         }
     });
 
@@ -126,6 +106,22 @@ export default function CheckoutPayment() {
             //
         }
     }, [isMountedRef, tickets]);
+
+    const countdownRenderer = ({ hours, minutes, seconds, completed }) => {
+        if (completed) {
+            return <Typography sx={{ color: 'error.main' }}>Hết thời gian thanh toán</Typography>
+        }
+        return <Typography>
+            Vui lòng thanh toán trong <Typography component="span" sx={{ color: 'success.main' }}>{zeroPad(minutes)}:{zeroPad(seconds)}</Typography>
+        </Typography>
+
+    }
+
+    const handleComplete = useCallback(async () => {
+        // setIsLoading(true);
+        await axios.post(`/api/huy-ve`, tickets);
+        dispatch(onBackStep());
+    }, []);
 
     useEffect(() => {
         getTickets();
@@ -153,7 +149,6 @@ export default function CheckoutPayment() {
                         <Scrollbar>
                             <CheckoutTicketList
                                 detailedTickets={detailedTickets}
-                                onDelete={handleRemoveTicket}
                             />
                         </Scrollbar>
                     ) : (
@@ -167,27 +162,42 @@ export default function CheckoutPayment() {
 
                 <Button
                     color="inherit"
-                    component={RouterLink}
-                    to="/movies/book"
+                    onClick={() => { dispatch(onBackStep()) }}
                     startIcon={<Icon icon={arrowIosBackFill} />}
+
                 >
-                    Quay lại khu vực mua vé
+                    Quay lại giỏ vé
                 </Button>
             </Grid>
 
             <Grid item xs={12} md={4}>
-                <PaymentMethods
-                    formik={formik}
-                />
-                <Button
-                    fullWidth
-                    size="large"
-                    variant="contained"
-                    disabled={detailedTickets.filter(t => t.trong).length === 0}
-                    onClick={() => { handleNextStep() }}
-                >
-                    Thanh toán
-                </Button>
+                <Card sx={{ mb: 3 }}>
+                    <CardHeader
+                        title={
+                            <Typography variant="h6">
+                                Chọn phương thức thanh toán
+                            </Typography>
+                        }
+                        sx={{ mb: 3 }}
+                    />
+                    <CardContent>
+                        <Countdown date={Date.now() + 5 * 60 * 1000} renderer={countdownRenderer} onComplete={handleComplete} />
+                        <FormikProvider formik={formik} >
+                            <PaymentMethods formik={formik} />
+                            <LoadingButton
+                                fullWidth
+                                size="large"
+                                variant="contained"
+                                type="submit"
+                                disabled={detailedTickets.length === 0}
+                                onClick={() => { formik.handleSubmit() }}
+                                loading={isLoading}
+                            >
+                                Thanh toán
+                            </LoadingButton>
+                        </FormikProvider>
+                    </CardContent>
+                </Card>
             </Grid>
         </Grid>
 
