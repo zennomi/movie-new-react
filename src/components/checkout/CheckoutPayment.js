@@ -1,11 +1,9 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack5';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, memo, useRef } from 'react';
 import Countdown, { zeroPad } from 'react-countdown';
-import { sum } from 'lodash';
 import { Icon } from '@iconify/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useFormik, Form, FormikProvider } from 'formik';
+import { useFormik, FormikProvider } from 'formik';
 import arrowIosBackFill from '@iconify/icons-eva/arrow-ios-back-fill';
 // material
 import { Grid, Card, Button, CardHeader, Typography, CardContent } from '@material-ui/core';
@@ -14,7 +12,8 @@ import { LoadingButton } from '@material-ui/lab';
 import { useDispatch, useSelector } from '../../redux/store';
 import {
     onNextStep,
-    onBackStep
+    onBackStep,
+    createBilling
 } from '../../redux/slices/ticket';
 
 //
@@ -31,8 +30,22 @@ import useIsMountedRef from '../../hooks/useIsMountedRef';
 
 // ----------------------------------------------------------------------
 
+const CountdownMemo = memo(({ handleComplete, countdownRef }) =>
+    <Countdown date={Date.now() + 5 * 1000} renderer={countdownRenderer} onComplete={handleComplete} ref={countdownRef} />
+)
+
+const countdownRenderer = ({ hours, minutes, seconds, completed }) => {
+    if (completed) {
+        return <Typography sx={{ color: 'error.main' }}>Hết thời gian thanh toán</Typography>
+    }
+    return <Typography>
+        Vui lòng thanh toán trong <Typography component="span" sx={{ color: 'success.main' }}>{zeroPad(minutes)}:{zeroPad(seconds)}</Typography>
+    </Typography>
+}
+
 export default function CheckoutPayment() {
     const { enqueueSnackbar } = useSnackbar();
+    const countdownRef = useRef();
 
     const dispatch = useDispatch();
     const isMountedRef = useIsMountedRef();
@@ -40,7 +53,7 @@ export default function CheckoutPayment() {
     const [detailedTickets, setTickets] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const { checkout, total, tickets } = useSelector((state) => state.ticket);
-    const { cart, discount, subtotal, activeStep } = checkout;
+    const { activeStep } = checkout;
     const isEmptyCart = total === 0;
 
 
@@ -59,6 +72,7 @@ export default function CheckoutPayment() {
         },
         validationSchema: PaymentSchema,
         onSubmit: async (values, { resetForm }) => {
+            countdownRef.current.pause();
             setIsLoading(true);
             const submitData = {
 
@@ -90,15 +104,19 @@ export default function CheckoutPayment() {
                     )
                 );
             }
+            const response = await axios.post(`/api/hoa-don`, detailedTickets);
+            const billing = response.data.result;
+            console.log(billing);
+            dispatch(createBilling(billing));
             resetForm();
             enqueueSnackbar('Payment success', { variant: 'success' });
-            // dispatch(onNextStep());
+            dispatch(onNextStep());
         }
     });
 
     const getTickets = useCallback(async () => {
         try {
-            const response = await axios.post(`/api/dat-ve`, tickets);
+            const response = await axios.post(`/api/ve/dat`, tickets);
             if (isMountedRef.current) {
                 setTickets(response.data.results);
             }
@@ -107,26 +125,14 @@ export default function CheckoutPayment() {
         }
     }, [isMountedRef, tickets]);
 
-    const countdownRenderer = ({ hours, minutes, seconds, completed }) => {
-        if (completed) {
-            return <Typography sx={{ color: 'error.main' }}>Hết thời gian thanh toán</Typography>
-        }
-        return <Typography>
-            Vui lòng thanh toán trong <Typography component="span" sx={{ color: 'success.main' }}>{zeroPad(minutes)}:{zeroPad(seconds)}</Typography>
-        </Typography>
-
-    }
-
     const handleComplete = useCallback(async () => {
-        // setIsLoading(true);
-        await axios.post(`/api/huy-ve`, tickets);
+        await axios.post(`/api/ve/huy`, tickets);
         dispatch(onBackStep());
     }, []);
 
     useEffect(() => {
         getTickets();
     }, [getTickets])
-
 
     return (
 
@@ -136,10 +142,7 @@ export default function CheckoutPayment() {
                     <CardHeader
                         title={
                             <Typography variant="h6">
-                                Card
-                                <Typography component="span" sx={{ color: 'text.secondary' }}>
-                                    &nbsp;({total} item)
-                                </Typography>
+                                {detailedTickets.length} vé đang được giữ chỗ trong thời gian thanh toán
                             </Typography>
                         }
                         sx={{ mb: 3 }}
@@ -149,6 +152,7 @@ export default function CheckoutPayment() {
                         <Scrollbar>
                             <CheckoutTicketList
                                 detailedTickets={detailedTickets}
+                                activeStep={activeStep}
                             />
                         </Scrollbar>
                     ) : (
@@ -159,15 +163,17 @@ export default function CheckoutPayment() {
                         />
                     )}
                 </Card>
+                {
+                    !isLoading &&
+                    <Button
+                        color="inherit"
+                        onClick={() => { dispatch(onBackStep()) }}
+                        startIcon={<Icon icon={arrowIosBackFill} />}
 
-                <Button
-                    color="inherit"
-                    onClick={() => { dispatch(onBackStep()) }}
-                    startIcon={<Icon icon={arrowIosBackFill} />}
-
-                >
-                    Quay lại giỏ vé
-                </Button>
+                    >
+                        Quay lại giỏ vé
+                    </Button>
+                }
             </Grid>
 
             <Grid item xs={12} md={4}>
@@ -181,8 +187,8 @@ export default function CheckoutPayment() {
                         sx={{ mb: 3 }}
                     />
                     <CardContent>
-                        <Countdown date={Date.now() + 5 * 60 * 1000} renderer={countdownRenderer} onComplete={handleComplete} />
                         <FormikProvider formik={formik} >
+                            <CountdownMemo handleComplete={handleComplete} countdownRef={countdownRef} />
                             <PaymentMethods formik={formik} />
                             <LoadingButton
                                 fullWidth

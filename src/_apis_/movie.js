@@ -2,7 +2,6 @@ import faker from 'faker';
 // utils
 import mock from './mock';
 // utils
-import mockData from '../utils/mock-data';
 import { fDate } from '../utils/formatTime';
 
 
@@ -70,7 +69,6 @@ mock.onGet("/api/phim/:maphim").reply((config) => {
 mock.onGet("/api/suat-chieu").reply((config) => {
     try {
         const { maphim, ngay } = config.params;
-        console.log(config.params);
         if (maphim) return [200, { results: showtimes.filter(s => s.phim.ma === Number(maphim) && s.ngay === ngay) }];
         return [200, { results: showtimes.filter(s => s.ngay === ngay).slice(0, 10) }];
     } catch (error) {
@@ -78,9 +76,10 @@ mock.onGet("/api/suat-chieu").reply((config) => {
     }
 })
 
-mock.onGet("/api/vi-tri").reply((config) => {
+mock.onGet("/api/suat-chieu/:masuatchieu/ghe").reply((config) => {
     try {
-        const { masuatchieu } = config.params;
+        const { masuatchieu } = config.routeParams;
+        console.log(masuatchieu);
         return [200, { results: filledSlots[Number(masuatchieu)] }]
 
     } catch (error) {
@@ -88,7 +87,7 @@ mock.onGet("/api/vi-tri").reply((config) => {
     }
 })
 
-mock.onPost("/api/ve").reply((config) => {
+mock.onPost("/api/ve/chi-tiet").reply((config) => {
     // lấy thông tin chi tiết của vé
     try {
         const tickets = JSON.parse(config.data);
@@ -105,15 +104,15 @@ mock.onPost("/api/ve").reply((config) => {
     }
 })
 
-mock.onPost("/api/dat-ve").reply((config) => {
-    // tạm thời tạo vé, nếu không thanh toán xong thì xoá
+mock.onPost("/api/ve/dat").reply((config) => {
+    // tạm thời tạo vé, nếu không thanh toán xong thì xoá, nhớ thêm trường expired để nhỡ khách hàng không thanh toán
     try {
         const tickets = JSON.parse(config.data);
         const detailedTickets = [];
         Object.keys(tickets).forEach(showtimeId => {
             const suatchieu = showtimes[showtimeId];
             tickets[showtimeId].forEach(v => {
-                if (faker.datatype.number({ max: 5 }) > 1) detailedTickets.push({ phim: suatchieu.phim, suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] }, hang: v.r, cot: v.c, gia: faker.datatype.number({ min: 10, max: 15 }) * 1e4 })
+                if (faker.datatype.number({ max: 5 }) > 1) detailedTickets.push({ suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] }, hang: v.r, cot: v.c, gia: faker.datatype.number({ min: 10, max: 15 }) * 1e4 })
             });
         })
         return [200, { results: detailedTickets }];
@@ -122,25 +121,40 @@ mock.onPost("/api/dat-ve").reply((config) => {
     }
 })
 
-mock.onPost("/api/huy-ve").reply((config) => {
+mock.onPost("/api/ve/huy").reply((config) => {
     // xoá vé
     const status = "success"
     return [200, { status }];
 
 })
 
-mock.onPost("/api/thanh-toan").reply((config) => {
-    // tạm thời tạo vé, nếu không thanh toán xong thì xoá
+mock.onGet("/api/hoa-don/:mahoadon").reply((config) => {
+    const { mahoadon } = config.routeParams;
     try {
-        const tickets = JSON.parse(config.data);
-        const detailedTickets = [];
-        Object.keys(tickets).forEach(showtimeId => {
-            const suatchieu = showtimes[showtimeId];
-            tickets[showtimeId].forEach(v => {
-                if (faker.datatype.number({ max: 5 }) > 1) detailedTickets.push({ phim: suatchieu.phim, suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] }, hang: v.r, cot: v.c, gia: faker.datatype.number({ min: 10, max: 15 }) * 1e4 })
-            });
-        })
-        return [200, { results: detailedTickets }];
+        return [200, {
+            result: {
+                id: faker.datatype.uuid(),
+                tickets: [...Array(5)].map(() => {
+                    const suatchieu = showtimes[faker.datatype.number({min: 0, max: 199})];
+                    return {
+                        id: faker.datatype.uuid(),
+                        suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] },
+                        hang: faker.datatype.number({max: suatchieu.hang}),
+                        cot: faker.datatype.number({max: suatchieu.cot})
+                    }
+                })
+            }
+        }
+        ];
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+mock.onPost("/api/hoa-don").reply((config) => {
+    // chốt vé, trả về uuid của hoá đơn
+    try {
+        return [200, { result: faker.datatype.uuid() }];
     } catch (error) {
         console.log(error);
     }

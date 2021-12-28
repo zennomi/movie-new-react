@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { styled } from '@material-ui/core/styles';
 import {
 	Box, Card, Chip, Button, Divider, Typography, CardContent,
-	Container,  Grid, Stack, Autocomplete, TextField
+	Container, Grid, Stack, Autocomplete, TextField
 } from '@material-ui/core';
 import { StaticDatePicker, LocalizationProvider } from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
@@ -55,10 +55,10 @@ export default function MovieBook() {
 	const [showtime, setShowtime] = useState({});
 	const [filledSlots, setFilledSlots] = useState([[]]);
 
-    const { tickets } = useSelector((state) => state.ticket);
+	const { tickets } = useSelector((state) => state.ticket);
 
 	const handleClickSlot = (showtimeId, r, c) => {
-		dispatch(addTicket({showtimeId, r, c}))
+		dispatch(addTicket({ showtimeId, r, c }))
 		setFilledSlots(slots => {
 			slots[r][c] = true;
 			return [...slots];
@@ -66,7 +66,7 @@ export default function MovieBook() {
 	}
 
 	const handleClickRemove = (showtimeId, r, c) => {
-		dispatch(removeTicket({showtimeId, r, c}))
+		dispatch(removeTicket({ showtimeId, r, c }))
 		if (showtime.ma && showtimeId.toString() === showtime.ma.toString()) {
 			setFilledSlots(slots => {
 				slots[r][c] = false;
@@ -108,10 +108,11 @@ export default function MovieBook() {
 
 	const getFilledSlots = async () => {
 		try {
-			const response = await axios.get(`/api/vi-tri`, { params: { masuatchieu: showtime.ma } });
-			const {results} = response.data;
+			const response = await axios.get(`/api/suat-chieu/${showtime.ma}/ghe`);
+			const { results } = response.data;
+			console.log(results);
 			if (tickets[showtime.ma]) {
-				tickets[showtime.ma].forEach(({r,c}) => {
+				tickets[showtime.ma].forEach(({ r, c }) => {
 					results[r][c] = true;
 				})
 			}
@@ -268,7 +269,7 @@ export default function MovieBook() {
 																			sx={{ minWidth: 0, width: 1 }}
 																			variant="contained"
 																			color={y ? "primary" : "inherit"}
-																			onClick={() => {if (!y) handleClickSlot(showtime.ma, i, j) }}
+																			onClick={() => { if (!y) handleClickSlot(showtime.ma, i, j) }}
 																		>
 																			{`${i + 1}-${j + 1}`}
 																		</Button>
@@ -303,8 +304,8 @@ export default function MovieBook() {
 																		<Typography>
 																			{key}
 																		</Typography>
-																		<Chip label={`Hàng ${ticket.r+1}`} />
-																		<Chip label={`Cột ${ticket.c+1}`} />
+																		<Chip label={`Hàng ${ticket.r + 1}`} />
+																		<Chip label={`Cột ${ticket.c + 1}`} />
 																	</Box>
 																	<Box>
 																		<MFab

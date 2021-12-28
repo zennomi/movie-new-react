@@ -4,7 +4,9 @@ import axios from '../utils/axios';
 
 // ----------------------------------------------------------------------
 const routeParams = {
-  ":maphim": "\\d?"
+  ":maphim": "\\d?",
+  ":masuatchieu": "\\d?",
+  ":mahoadon": "\\d?",
 }
 
 const axiosMockAdapter = new AxiosMockAdapter(axios, {

@@ -115,7 +115,6 @@ export default function PaymentMethods({ formik }) {
                                                 }}
                                             >
                                                 <Stack spacing={2}>
-                                                    <Typography variant="subtitle1">Add new card</Typography>
                                                     <TextField fullWidth size="small" label="Name on card" {...getFieldProps('newCardName')}/>
 
                                                     <TextField fullWidth size="small" label="Card number" {...getFieldProps('newCardNumber')}/>

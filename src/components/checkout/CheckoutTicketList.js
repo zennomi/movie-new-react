@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
-import plusFill from '@iconify/icons-eva/plus-fill';
-import minusFill from '@iconify/icons-eva/minus-fill';
 import trash2Fill from '@iconify/icons-eva/trash-2-fill';
 // material
 import { styled } from '@material-ui/styles';
@@ -35,10 +33,10 @@ const ThumbImgStyle = styled('img')(({ theme }) => ({
 ProductList.propTypes = {
     detailedTickets: PropTypes.object.isRequired,
     onDelete: PropTypes.func,
-
 };
 
 export default function ProductList({ detailedTickets, onDelete, activeStep }) {
+    console.log(activeStep)
     return (
         <TableContainer sx={{ minWidth: 720 }}>
             <Table>
@@ -57,7 +55,8 @@ export default function ProductList({ detailedTickets, onDelete, activeStep }) {
 
                 <TableBody>
                     {detailedTickets.map((ticket) => {
-                        const { phim, suatchieu, hang, cot, gia } = ticket;
+                        const { suatchieu, hang, cot, gia } = ticket;
+                        const { phim } = suatchieu;
                         return (
                             <TableRow key={`${suatchieu.ma}-${hang}-${cot}`}>
                                 <TableCell>
@@ -107,6 +106,14 @@ export default function ProductList({ detailedTickets, onDelete, activeStep }) {
                             </TableRow>
                         );
                     })}
+                    <TableRow>
+                        {activeStep === 1 &&
+                            <>
+                                <TableCell align="right"><Typography variant="subtitle1">Tổng số tiền</Typography></TableCell>
+                                <TableCell align="left">{fCurrency(detailedTickets.map(t => t.gia).reduce((a, b) => a + b, 0))}</TableCell>
+                            </>
+                        }
+                    </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>

@@ -17,6 +17,7 @@ import Page from '../components/Page';
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumbs';
 import CheckoutCart from '../components/checkout/CheckoutCart';
 import CheckoutPayment from '../components/checkout/CheckoutPayment';
+import CheckoutTickets from '../components/checkout/CheckoutTickets';
 import CheckoutOrderComplete from '../components/checkout/CheckoutOrderComplete';
 
 // ----------------------------------------------------------------------
@@ -134,7 +135,7 @@ export default function EcommerceCheckout() {
           <>
             {activeStep === 0 && <CheckoutCart />}
             {activeStep === 1 && <CheckoutPayment />}
-            {activeStep === 2 && billing && <CheckoutCart />}
+            {activeStep === 2 && <CheckoutTickets />}
           </>
         ) : (
           <CheckoutOrderComplete open={isComplete} />

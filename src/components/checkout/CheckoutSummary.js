@@ -31,29 +31,13 @@ CheckoutSummary.propTypes = {
 };
 
 export default function CheckoutSummary({
-  total,
-  onEdit,
-  discount,
-  subtotal,
-  shipping = null,
-  onApplyDiscount,
-  enableEdit = false,
-  enableDiscount = false,
   detailedTickets
 }) {
-  const displayShipping = shipping !== null ? 'Free' : '-';
 
   return (
     <Card sx={{ mb: 3 }}>
       <CardHeader
         title="Order Summary"
-        action={
-          enableEdit && (
-            <Button size="small" type="button" onClick={onEdit} startIcon={<Icon icon={editFill} />}>
-              Edit
-            </Button>
-          )
-        }
       />
 
       <CardContent>
@@ -69,7 +53,7 @@ export default function CheckoutSummary({
             <Typography variant="subtitle1">Total</Typography>
             <Box sx={{ textAlign: 'right' }}>
               <Typography variant="subtitle1" sx={{ color: 'error.main' }}>
-                {fCurrency(detailedTickets.filter(t => t.trong).map(t => t.gia).reduce((a, b) => a+b, 0) - discount )}
+                {fCurrency(detailedTickets.filter(t => t.trong).map(t => t.gia).reduce((a, b) => a + b, 0))}
               </Typography>
               <Typography variant="caption" sx={{ fontStyle: 'italic' }}>
                 (VAT included if applicable)

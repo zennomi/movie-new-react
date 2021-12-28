@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from '../../redux/store';
 import {
     removeTicket,
     onNextStep,
-    applyDiscount,
 } from '../../redux/slices/ticket';
 
 //
@@ -34,7 +33,7 @@ export default function CheckoutCart() {
 
     const [detailedTickets, setTickets] = useState([]);
     const { checkout, total, tickets } = useSelector((state) => state.ticket);
-    const { cart, discount, subtotal, activeStep } = checkout;
+    const { subtotal, activeStep } = checkout;
     const isEmptyCart = total === 0;
 
     const handleRemoveTicket = (ticket) => {
@@ -43,10 +42,6 @@ export default function CheckoutCart() {
 
     const handleNextStep = () => {
         dispatch(onNextStep());
-    };
-
-    const handleApplyDiscount = (value) => {
-        dispatch(applyDiscount(value));
     };
 
     // const formik = useFormik({
@@ -67,7 +62,7 @@ export default function CheckoutCart() {
 
     const getTickets = useCallback(async () => {
         try {
-            const response = await axios.post(`/api/ve`, tickets);
+            const response = await axios.post(`/api/ve/chi-tiet`, tickets);
             if (isMountedRef.current) {
                 setTickets(response.data.results);
             }
@@ -79,7 +74,6 @@ export default function CheckoutCart() {
     useEffect(() => {
         getTickets();
     }, [getTickets])
-
 
     return (
 
@@ -128,10 +122,6 @@ export default function CheckoutCart() {
             <Grid item xs={12} md={4}>
                 <CheckoutSummary
                     total={total}
-                    enableDiscount
-                    discount={discount}
-                    subtotal={subtotal}
-                    onApplyDiscount={handleApplyDiscount}
                     detailedTickets={detailedTickets}
                 />
                 <Button

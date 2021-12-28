@@ -1,7 +1,6 @@
 import { reject } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 // utils
-import axios from '../../utils/axios';
 
 const initialState = {
     isLoading: false,
@@ -72,11 +71,6 @@ const slice = createSlice({
         createBilling(state, action) {
             state.checkout.billing = action.payload;
         },
-
-        applyDiscount(state, action) {
-            const discount = action.payload;
-            state.checkout.discount = discount;
-        },
     }
 })
 
@@ -92,7 +86,6 @@ export const {
     onBackStep,
     onNextStep,
     createBilling,
-    applyDiscount,
     resetCart,
 } = slice.actions;
 

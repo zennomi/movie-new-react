@@ -30,7 +30,7 @@ function SnackbarStyles() {
             '&.SnackbarItem-variantSuccess, &.SnackbarItem-variantError, &.SnackbarItem-variantWarning, &.SnackbarItem-variantInfo':
               {
                 color: theme.palette.text.primary,
-                backgroundColor: theme.palette.background.paper
+                backgroundColor: theme.palette.background.default
               }
           },
           '& .SnackbarItem-message': {
@@ -66,7 +66,7 @@ function SnackbarIcon({ icon, color }) {
         alignItems: 'center',
         justifyContent: 'center',
         color: `${color}.main`,
-        // bgcolor: (theme) => alpha(theme.palette[color].main, 0.16)
+        bgcolor: 'background.default'
       }}
     >
       <Icon icon={icon} width={24} height={24} />
@@ -89,7 +89,7 @@ export default function NotistackProvider({ children }) {
         // preventDuplicate
         autoHideDuration={3000}
         anchorOrigin={{
-          vertical: 'top',
+          vertical: 'bottom',
           horizontal: 'right'
         }}
         iconVariant={{
