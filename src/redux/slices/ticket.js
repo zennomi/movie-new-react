@@ -9,9 +9,6 @@ const initialState = {
     total: 0,
     checkout: {
         activeStep: 0,
-        subtotal: 0,
-        discount: 0,
-        shipping: 0,
         billing: null
     }
 };
@@ -59,12 +56,8 @@ const slice = createSlice({
         },
 
         resetCart(state) {
-            state.checkout.activeStep = 0;
-            state.checkout.cart = [];
-            state.checkout.total = 0;
-            state.checkout.subtotal = 0;
-            state.checkout.discount = 0;
-            state.checkout.shipping = 0;
+            state.tickets = {};
+            state.total = 0;
             state.checkout.billing = null;
         },
 

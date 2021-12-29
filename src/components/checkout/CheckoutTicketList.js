@@ -30,13 +30,7 @@ const ThumbImgStyle = styled('img')(({ theme }) => ({
 }));
 
 
-ProductList.propTypes = {
-    detailedTickets: PropTypes.object.isRequired,
-    onDelete: PropTypes.func,
-};
-
-export default function ProductList({ detailedTickets, onDelete, activeStep }) {
-    console.log(activeStep)
+export default function CheckoutTicketList({ detailedTickets, onDelete, activeStep }) {
     return (
         <TableContainer sx={{ minWidth: 720 }}>
             <Table>

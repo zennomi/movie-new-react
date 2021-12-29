@@ -13,7 +13,8 @@ import { useDispatch, useSelector } from '../../redux/store';
 import {
     onNextStep,
     onBackStep,
-    createBilling
+    createBilling,
+    resetCart,
 } from '../../redux/slices/ticket';
 
 //
@@ -106,7 +107,7 @@ export default function CheckoutPayment() {
             }
             const response = await axios.post(`/api/hoa-don`, detailedTickets);
             const billing = response.data.result;
-            console.log(billing);
+            dispatch(resetCart());
             dispatch(createBilling(billing));
             resetForm();
             enqueueSnackbar('Payment success', { variant: 'success' });

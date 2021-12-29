@@ -130,14 +130,15 @@ mock.onPost("/api/ve/huy").reply((config) => {
 
 mock.onGet("/api/hoa-don/:mahoadon").reply((config) => {
     const { mahoadon } = config.routeParams;
+    console.log(mahoadon);
     try {
         return [200, {
             result: {
-                id: faker.datatype.uuid(),
-                tickets: [...Array(5)].map(() => {
+                ma: faker.datatype.uuid(),
+                ve: [...Array(5)].map(() => {
                     const suatchieu = showtimes[faker.datatype.number({min: 0, max: 199})];
                     return {
-                        id: faker.datatype.uuid(),
+                        ma: faker.datatype.uuid(),
                         suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] },
                         hang: faker.datatype.number({max: suatchieu.hang}),
                         cot: faker.datatype.number({max: suatchieu.cot})

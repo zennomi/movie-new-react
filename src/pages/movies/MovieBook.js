@@ -110,7 +110,6 @@ export default function MovieBook() {
 		try {
 			const response = await axios.get(`/api/suat-chieu/${showtime.ma}/ghe`);
 			const { results } = response.data;
-			console.log(results);
 			if (tickets[showtime.ma]) {
 				tickets[showtime.ma].forEach(({ r, c }) => {
 					results[r][c] = true;
