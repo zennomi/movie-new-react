@@ -45,7 +45,7 @@ const shift = ["06:00", "09:00", "12:00", "15:00", "18:00", "21:00"];
 
 mock.onGet('/api/phim').reply((config) => {
     try {
-        const { page } = config.params || { page: 0 };
+        const { page, theloai } = config.params || { page: 0 };
         const maxLength = movies.length;
 
         const results = movies.slice(page * skip, (page + 1) * skip);
@@ -55,6 +55,20 @@ mock.onGet('/api/phim').reply((config) => {
         console.log(error);
     }
 });
+
+mock.onGet('/api/phim-sap-chieu').reply((config) => {
+    try {
+        const { page, theloai } = config.params || { page: 0 };
+        const maxLength = movies.length;
+
+        const results = movies.slice(page * skip, (page + 1) * skip);
+
+        return [200, { results, maxLength }];
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 
 mock.onGet("/api/phim/:maphim").reply((config) => {
     try {
@@ -98,6 +112,7 @@ mock.onPost("/api/ve/chi-tiet").reply((config) => {
                 detailedTickets.push({ phim: suatchieu.phim, suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] }, hang: v.r, cot: v.c, gia: faker.datatype.number({ min: 10, max: 15 }) * 1e4, trong: faker.datatype.number({ max: 5 }) > 1 })
             });
         })
+        // form ve [{masuatchieu, hang, cot}] return [{suatchieu: {phim, ca: (HH:MM), ngay, gia}}, hang, cot]
         return [200, { results: detailedTickets }];
     } catch (error) {
         console.log(error);
@@ -116,16 +131,16 @@ mock.onPost("/api/ve/dat").reply((config) => {
             });
         })
         return [200, { results: detailedTickets }];
+        // form ve [{masuatchieu, hang, cot}] return [{suatchieu: {phim, ca: (HH:MM), ngay, gia}}, hang, cot] (vé mình giữ được trong 5 phút)
     } catch (error) {
         console.log(error);
     }
 })
 
 mock.onPost("/api/ve/huy").reply((config) => {
-    // xoá vé
+    // form ve [{masuatchieu, hang, cot}] xoá vé
     const status = "success"
     return [200, { status }];
-
 })
 
 mock.onGet("/api/hoa-don/:mahoadon").reply((config) => {
@@ -136,12 +151,12 @@ mock.onGet("/api/hoa-don/:mahoadon").reply((config) => {
             result: {
                 ma: faker.datatype.uuid(),
                 ve: [...Array(5)].map(() => {
-                    const suatchieu = showtimes[faker.datatype.number({min: 0, max: 199})];
+                    const suatchieu = showtimes[faker.datatype.number({ min: 0, max: 199 })];
                     return {
                         ma: faker.datatype.uuid(),
                         suatchieu: { ...suatchieu, gio: shift[suatchieu.ca] },
-                        hang: faker.datatype.number({max: suatchieu.hang}),
-                        cot: faker.datatype.number({max: suatchieu.cot})
+                        hang: faker.datatype.number({ max: suatchieu.hang }),
+                        cot: faker.datatype.number({ max: suatchieu.cot })
                     }
                 })
             }
@@ -153,7 +168,7 @@ mock.onGet("/api/hoa-don/:mahoadon").reply((config) => {
 });
 
 mock.onPost("/api/hoa-don").reply((config) => {
-    // chốt vé, trả về uuid của hoá đơn
+    // form ve [{masuatchieu, hang, cot}] chốt vé, trả về uuid của hoá đơn mới
     try {
         return [200, { result: faker.datatype.uuid() }];
     } catch (error) {
