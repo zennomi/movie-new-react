@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Icon } from '@iconify/react';
-import { sentenceCase } from 'change-case';
 import clockFill from '@iconify/icons-eva/clock-fill';
 import roundVerified from '@iconify/icons-ic/round-verified';
 import roundVerifiedUser from '@iconify/icons-ic/round-verified-user';
 import { useParams, Link } from 'react-router-dom';
+import ReactPlayer from 'react-player/youtube'
 // material
 import { alpha, styled, useTheme } from '@material-ui/core/styles';
-import { Box, Tab, Card, Grid, Divider, Skeleton, Container, Typography, Stack, Rating, Button } from '@material-ui/core';
+import { Box, Tab, Card, Grid, Divider, Skeleton, Container, Typography, Stack, Rating, Button, Chip } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 // icon
 import roundAddShoppingCart from '@iconify/icons-ic/round-add-shopping-cart';
@@ -27,18 +27,18 @@ import { fShortenNumber, fCurrency } from '../../utils/formatNumber';
 
 const PRODUCT_DESCRIPTION = [
 	{
-		title: '100% Original',
-		description: 'Chocolate bar candy canes ice cream toffee cookie halvah.',
+		title: 'Thanh toán online 100%',
+		description: 'Bằng thẻ ngân hàng, Momo, Viettelpay.',
 		icon: roundVerified
 	},
 	{
-		title: '10 Day Replacement',
-		description: 'Marshmallow biscuit donut dragée fruitcake wafer.',
+		title: 'Đặt vé trước 1 ngày',
+		description: 'Đặt xong xem. Easy.',
 		icon: clockFill
 	},
 	{
-		title: 'Year Warranty',
-		description: 'Cotton candy gingerbread cake I love sugar sweet.',
+		title: 'Không cần đăng nhập',
+		description: 'Nhận mã QR hoá đơn & vé. Quy đổi tại rạp.',
 		icon: roundVerifiedUser
 	}
 ];
@@ -87,20 +87,20 @@ export default function MovieDetails() {
 	const handleChangeTab = (event, newValue) => {
 		setValue(newValue);
 	};
-	
+
 	return (
-		<Page title={movie?.title}>
+		<Page title={movie?.ten}>
 			<Container maxWidth={themeStretch ? false : 'lg'}>
 				<HeaderBreadcrumbs
-					heading={movie?.tenphim}
+					heading={movie?.tenphim || ""}
 					links={[
 						{ name: 'Phim rạp', href: '/movies' },
-						{ name: movie ? sentenceCase(movie.ten) : '' }
+						{ name: movie ? (movie.ten).toUpperCase() : '' }
 					]}
 				/>
 				{movie && (
 					<>
-						<Card>
+						<Card sx={{ mb: 2 }}>
 							<Grid container sx={{ p: 2 }} spacing={3}>
 								<Grid item xs={12} md={3} lg={4}>
 									<Card>
@@ -108,34 +108,50 @@ export default function MovieDetails() {
 									</Card>
 								</Grid>
 								<Grid item xs={12} md={9} lg={8}>
-									<Label
-										variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-										color={movie.ma === 'in_stock' ? 'success' : 'error'}
-										sx={{ textTransform: 'uppercase' }}
-									>
-										{sentenceCase(movie.theloai)}
-									</Label>
-									<Typography
-										variant="overline"
-										sx={{
-											mt: 2,
-											mb: 1,
-											display: 'block',
-											color: movie.short === 'sale' ? 'error.main' : 'info.main'
-										}}
-									>
-										{movie.thoigian}
-									</Typography>
-
-									<Typography variant="h5" paragraph>
-										{movie.ten}
-									</Typography>
-									<Stack spacing={0.5} direction="row" alignItems="center" sx={{ mb: 2 }}>
-										<Rating value={movie.danhgia} precision={0.1} readOnly />
-										<Typography variant="body2" sx={{ color: 'text.secondary' }}>
-											({fShortenNumber(10)}
-											reviews)
+									<Stack direction="row" spacing={2}>
+										{
+											movie.theloai.map(genre => (
+												<Label
+													key={genre}
+													variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+													color="primary"
+													sx={{ textTransform: 'uppercase' }}
+												>
+													{(genre).toUpperCase()}
+												</Label>
+											))
+										}
+									</Stack>
+									<Stack
+										direction="row"
+										spacing={2}
+										sx={{ mt: 2, mb: 1 }}>
+										<Typography
+											variant="h5"
+										>
+											{movie.ten.toUpperCase()}{" "}
 										</Typography>
+										<Rating value={movie.danhgia} precision={0.1} readOnly />
+									</Stack>
+									<Stack
+										direction="row"
+										spacing={2}
+										sx={{ mb: 1 }}
+									>
+										<Label
+											variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+											color="primary"
+											sx={{ textTransform: 'uppercase' }}
+										>
+											{`${movie.thoigian} phút`}
+										</Label>
+										<Label
+											variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+											color="error"
+											sx={{ textTransform: 'uppercase' }}
+										>
+											{movie.rate}
+										</Label>
 									</Stack>
 									<Typography paragraph>
 										{movie.noidung}
@@ -156,63 +172,39 @@ export default function MovieDetails() {
 										>
 											Mua vé
 										</Button>
-										<Button 
-										fullWidth
-										size="large"
-										type="submit"
-										variant="contained"
-										href={movie.trailer}
-										target="_blank"
+										<Button
+											fullWidth
+											size="large"
+											type="submit"
+											variant="contained"
+											href={movie.trailer}
+											target="_blank"
 										>
 											Trailer
 										</Button>
 									</Stack>
+									<Grid container sx={{ my: 4 }}>
+										{PRODUCT_DESCRIPTION.map((item) => (
+											<Grid item xs={12} md={4} key={item.title}>
+												<Box sx={{ mx: 'auto', textAlign: 'center' }}>
+													<IconWrapperStyle>
+														<Icon icon={item.icon} width={36} height={36} />
+													</IconWrapperStyle>
+													<Typography variant="subtitle1" gutterBottom>
+														{item.title}
+													</Typography>
+													<Typography sx={{ color: 'text.secondary' }}>{item.description}</Typography>
+												</Box>
+											</Grid>
+										))}
+									</Grid>
 								</Grid>
 							</Grid>
 						</Card>
-
-						<Grid container sx={{ my: 8 }}>
-							{PRODUCT_DESCRIPTION.map((item) => (
-								<Grid item xs={12} md={4} key={item.title}>
-									<Box sx={{ my: 2, mx: 'auto', maxWidth: 280, textAlign: 'center' }}>
-										<IconWrapperStyle>
-											<Icon icon={item.icon} width={36} height={36} />
-										</IconWrapperStyle>
-										<Typography variant="subtitle1" gutterBottom>
-											{item.title}
-										</Typography>
-										<Typography sx={{ color: 'text.secondary' }}>{item.description}</Typography>
-									</Box>
-								</Grid>
-							))}
-						</Grid>
-
-						<Card>
-							<TabContext value={value}>
-								<Box sx={{ px: 3, bgcolor: 'background.neutral' }}>
-									<TabList onChange={handleChangeTab}>
-										<Tab disableRipple value="1" label="Description" />
-										<Tab
-											disableRipple
-											value="2"
-											label={`Review (${movie})`}
-											sx={{ '& .MuiTab-wrapper': { whiteSpace: 'nowrap' } }}
-										/>
-									</TabList>
-								</Box>
-
-								<Divider />
-
-								<TabPanel value="1">
-									<Box sx={{ p: 3 }}>
-										<Markdown children={movie.description} />
-									</Box>
-								</TabPanel>
-								<TabPanel value="2">
-									{/* <ProductDetailsReview product={product} /> */}
-								</TabPanel>
-							</TabContext>
+						<Card sx={{ mb: 2 }} style={{ position: "relative", paddingTop: "56.25%" }}>
+							{movie?.trailer && <ReactPlayer url={movie.trailer} width='100%' height='100%' style={{ position: 'absolute', top: 0, left: 0 }} />}
 						</Card>
+
 					</>
 				)}
 			</Container>

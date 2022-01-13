@@ -210,15 +210,17 @@ export default function MovieBook() {
 													<Grid
 														container
 														spacing={1}
-														style={s.ma === showtime?.ma ? { background: 'gray', cursor: 'pointer' } : { cursor: 'pointer' }}
+														style={{ cursor: 'pointer' }}
+														sx={{ bgcolor: s.ma === showtime?.ma ? 'primary.main' : '', borderRadius: 1, p: 1 }}
 														onClick={() => { setShowtime(s) }}
 													>
 														<Grid item xs={2}>
-															<img
-																src={s.phim.bia}
-																alt={s.phim.ten}
-																style={{ width: '100%' }}
-															/>
+															<Card sx={{ borderRadius: 0.5 }}>
+																<img
+																	src={s.phim.bia}
+																	alt={s.phim.ten}
+																/>
+															</Card>
 														</Grid>
 														<Grid item xs={10}>
 															<Typography>
@@ -226,13 +228,10 @@ export default function MovieBook() {
 															</Typography>
 															<Grid item container spacing={1}>
 																<Grid item>
-																	<Chip color="primary" icon={<EventIcon />} label={s.ngay} size="small" />
+																	<Chip color="primary" variant={s.ma === showtime?.ma ? "filled" : "outlined"} icon={<EventIcon />} label={`${s.ngay} ${s.ca}`} size="small" />
 																</Grid>
 																<Grid item>
-																	<Chip icon={<QueryBuilderIcon />} label={s.ca} size="small" />
-																</Grid>
-																<Grid item>
-																	<Chip icon={<HourglassEmptyIcon />} label={fAmountTime(s.phim.thoigian)} size="small" />
+																	<Chip color="primary" variant={s.ma === showtime?.ma ? "filled " : "outlined"} icon={<HourglassEmptyIcon />} label={fAmountTime(s.phim.thoigian)} size="small" />
 																</Grid>
 															</Grid>
 
@@ -265,7 +264,7 @@ export default function MovieBook() {
 																{x.map((y, j) =>
 																	<Grid item key={j} xs={12 / x.length}>
 																		<Button
-																			sx={{ minWidth: 0, width: 1 }}
+																			sx={{ minWidth: 0, width: 1, fontSize: 10 }}
 																			variant="contained"
 																			color={y ? "primary" : "inherit"}
 																			onClick={() => { if (!y) handleClickSlot(showtime.ma, i, j) }}

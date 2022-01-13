@@ -29,6 +29,10 @@ import axios from "../../utils/axios";
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';
 
+
+// utils
+import { ticketObjToArr } from '../../utils/formatTickets'
+
 // ----------------------------------------------------------------------
 
 const CountdownMemo = memo(({ handleComplete, countdownRef }) =>
@@ -52,7 +56,7 @@ export default function CheckoutPayment() {
     const isMountedRef = useIsMountedRef();
 
     const [detailedTickets, setTickets] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const { checkout, total, tickets } = useSelector((state) => state.ticket);
     const { activeStep } = checkout;
     const isEmptyCart = total === 0;
@@ -117,9 +121,10 @@ export default function CheckoutPayment() {
 
     const getTickets = useCallback(async () => {
         try {
-            const response = await axios.post(`/api/ve/dat`, tickets);
+            const response = await axios.post(`/api/ve/dat`, ticketObjToArr(tickets));
             if (isMountedRef.current) {
                 setTickets(response.data.results);
+                setIsLoading(false);
             }
         } catch (err) {
             //
@@ -127,7 +132,7 @@ export default function CheckoutPayment() {
     }, [isMountedRef, tickets]);
 
     const handleComplete = useCallback(async () => {
-        await axios.post(`/api/ve/huy`, tickets);
+        await axios.post(`/api/ve/huy`, ticketObjToArr(tickets));
         dispatch(onBackStep());
     }, []);
 
@@ -189,7 +194,7 @@ export default function CheckoutPayment() {
                     />
                     <CardContent>
                         <FormikProvider formik={formik} >
-                            <CountdownMemo handleComplete={handleComplete} countdownRef={countdownRef} />
+                            {!isLoading && <CountdownMemo handleComplete={handleComplete} countdownRef={countdownRef} />}
                             <PaymentMethods formik={formik} />
                             <LoadingButton
                                 fullWidth

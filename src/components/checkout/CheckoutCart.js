@@ -25,6 +25,9 @@ import axios from "../../utils/axios";
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';
 
+// utils
+import { ticketObjToArr } from '../../utils/formatTickets'
+
 // ----------------------------------------------------------------------
 
 export default function CheckoutCart() {
@@ -44,25 +47,9 @@ export default function CheckoutCart() {
         dispatch(onNextStep());
     };
 
-    // const formik = useFormik({
-    //     enableReinitialize: true,
-    //     initialValues: { products: cart },
-    //     onSubmit: async (values, { setErrors, setSubmitting }) => {
-    //         try {
-    //             setSubmitting(true);
-    //             handleNextStep();
-    //         } catch (error) {
-    //             console.error(error);
-    //             setErrors(error.message);
-    //         }
-    //     }
-    // });
-
-    // const { values, handleSubmit } = formik;
-
     const getTickets = useCallback(async () => {
         try {
-            const response = await axios.post(`/api/ve/chi-tiet`, tickets);
+            const response = await axios.post(`/api/ve/chi-tiet`, ticketObjToArr(tickets));
             if (isMountedRef.current) {
                 setTickets(response.data.results);
             }

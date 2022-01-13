@@ -113,8 +113,8 @@ export default function LandingHero() {
               <Button
                 size="large"
                 variant="contained"
-                component={RouterLink}
-                to={PATH_DASHBOARD.root}
+                component="a"
+                href="https://github.com/zennomi/movie-new-react"
                 startIcon={<Icon icon={flashFill} width={20} height={20} />}
               >
                 Github

@@ -11,15 +11,16 @@ export const movies = [...Array(25)].map((_, index) => ({
     ma: index,
     ten: faker.lorem.sentence(),
     thoigian: faker.datatype.number({ min: 60, max: 150 }),
-    theloai: faker.music.genre(),
+    theloai: [faker.music.genre(), faker.music.genre(), faker.music.genre()],
     ngonngu: faker.address.country(),
-    danhgia: faker.datatype.number({ min: 0, max: 5 }),
+    danhgia: faker.datatype.number({ min: 0, max: 5 }), // bổ sung
     trailer: faker.internet.url(),
     noidung: faker.lorem.sentences(),
-    bia: faker.image.imageUrl(900, 1600, 'food', true)
+    bia: faker.image.imageUrl(900, 1600, 'food', true), // bổ sung
+    rating: "R18"
 }));
 
-export const showtimes = [...Array(200)].map((_, index) => ({
+export const showtimes = [...Array(200)].map((_, index) => ({ // lịch chiếu
     ma: index,
     phim: movies[faker.datatype.number({ min: 0, max: 24 })],
     maphong: faker.datatype.number({ min: 0, max: 5 }),

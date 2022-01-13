@@ -22,7 +22,7 @@ const SOCIALS = [
 
 const LINKS = [
   {
-    headline: 'Minimal',
+    headline: 'Movie New',
     children: [
       { name: 'About us', href: '#' },
       { name: 'Contact us', href: '#' },
@@ -37,10 +37,11 @@ const LINKS = [
     ]
   },
   {
-    headline: 'Contact',
+    headline: 'Thành viên nhóm',
     children: [
-      { name: 'support@minimals.cc', href: '#' },
-      { name: 'Los Angeles, 359  Hidden Valley Road', href: '#' }
+      { name: 'Nguyễn Đăng Tuấn Anh - Frontend', href: '#' },
+      { name: 'Nguyễn Ngọc Tuân - Backend', href: '#' },
+      { name: 'Nguyễn Huy Hoàn - Database', href: '#' },
     ]
   }
 ];
@@ -69,8 +70,7 @@ export default function MainFooter() {
           </Grid>
           <Grid item xs={8} md={3}>
             <Typography variant="body2" sx={{ pr: { md: 5 } }}>
-              The starting point for your next project with Minimal UI Kit, built on the newest version of Material-UI
-              ©, ready to be customized to your style.
+              Một dự án của môn Thực hành Cơ Sở Dữ Liệu.
             </Typography>
 
             <Stack

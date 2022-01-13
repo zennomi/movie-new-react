@@ -71,7 +71,7 @@ export default function CheckoutTicketList({ detailedTickets, onDelete, activeSt
                                                     <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
                                                         Giờ:&nbsp;
                                                     </Typography>
-                                                    {`${suatchieu.ngay} - ${suatchieu.gio}`}
+                                                    {`${suatchieu.ngay} - ${suatchieu.ca}`}
                                                 </Typography>
 
                                                 <Typography variant="body2">
