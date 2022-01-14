@@ -7,8 +7,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactPlayer from 'react-player/youtube'
 // material
 import { alpha, styled, useTheme } from '@material-ui/core/styles';
-import { Box, Tab, Card, Grid, Divider, Skeleton, Container, Typography, Stack, Rating, Button, Chip } from '@material-ui/core';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import { Box, Tab, Card, Grid, Divider, Skeleton, Container, Typography, Stack, Rating, Button } from '@material-ui/core';
 // icon
 import roundAddShoppingCart from '@iconify/icons-ic/round-add-shopping-cart';
 // hooks
@@ -16,12 +15,10 @@ import useIsMountedRef from '../../hooks/useIsMountedRef';
 import useSettings from '../../hooks/useSettings';
 // components
 import Page from '../../components/Page';
-import Markdown from '../../components/Markdown';
 import Label from '../../components/Label';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // utils
 import axios from '../../utils/axios';
-import { fShortenNumber, fCurrency } from '../../utils/formatNumber';
 
 // ----------------------------------------------------------------------
 

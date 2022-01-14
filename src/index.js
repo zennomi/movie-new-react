@@ -9,7 +9,6 @@ import { StrictMode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
-
 // slick-carousel
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -32,7 +31,7 @@ ReactDOM.render(
         <SettingsProvider>
           <CollapseDrawerProvider>
             <BrowserRouter>
-              <App />
+                <App />
             </BrowserRouter>
           </CollapseDrawerProvider>
         </SettingsProvider>

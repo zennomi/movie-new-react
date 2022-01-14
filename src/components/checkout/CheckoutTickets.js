@@ -1,9 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import QRCode from "qrcode.react";
+import QRImage from 'react-qr-image'
 // material
-import { Alert, Box, Card, CardContent, CardHeader, Grid, Typography } from "@material-ui/core";
-// axios
+import { Alert, Card, CardContent, CardHeader, Grid, Typography, Stack, Chip } from "@material-ui/core";
+// icons
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import EventIcon from '@material-ui/icons/Event';
+// utils
 import axios from "../../utils/axios";
+import { fAmountTime } from '../../utils/formatNumber';
+
 // redux
 import { useSelector } from '../../redux/store';
 // hooks
@@ -15,14 +20,11 @@ export default function CheckoutTickets() {
     const { billing } = checkout;
     console.log(billing);
     const [tickets, setTickets] = useState([]);
-
+    console.log(tickets);
     const getTickets = useCallback(async () => {
         try {
             const response = await axios.get(`/api/hoa-don/${billing}`);
-            console.log(response.data.result);
-            if (isMountedRef.current) {
-                setTickets(response.data.result.ve);
-            }
+            setTickets(response.data.results.ve);
         } catch (error) {
             console.log(error);
         }
@@ -44,14 +46,40 @@ export default function CheckoutTickets() {
                                     Mã QR các vé lẻ
                                 </Typography>
                             }
-                            sx={{ mb: 3 }}
+                            sx={{ mb: 1 }}
                         />
                         <CardContent>
-                            <Grid container space={2}>
+                            <Grid container space={2} spacing={2}>
                                 {
                                     tickets.map(t =>
-                                        <Grid item xs={6} sx={{padding: 2}}>
-                                            <QRCode value={`ve-${t.ma}`} size={256} style={{ width: "100%" }} />
+                                        <Grid key={t.ma} item xs={6} >
+                                            <Grid container spacing={1} sx={{ mb: 1 }}>
+                                                <Grid item xs={3}>
+                                                    <Card sx={{ borderRadius: 0.5 }}>
+                                                        {t.suatchieu && <img alt={t.suatchieu.phim.ten} src={t.suatchieu.phim.bia} />}
+                                                    </Card>
+                                                </Grid>
+                                                <Grid item xs={9} sx={{ mb: 1 }}>
+                                                    <Stack >
+                                                        <Typography
+                                                            variant="h5"
+                                                            color="primary"
+                                                        >
+                                                            {t.suatchieu.phim.ten}{" "}
+                                                            <Chip color="primary" icon={<EventIcon />} label={`${t.suatchieu.ngay} ${t.suatchieu.ca}`} size="small" />
+                                                        </Typography>
+                                                        <Grid item container spacing={1}>
+                                                            <Grid item>
+                                                                <Chip color="primary" icon={<HourglassEmptyIcon />} label={fAmountTime(t.suatchieu.phim.thoigian)} size="small" />
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Chip color="primary" label={`Ghế: ${t.hang + 1}-${t.cot + 1}`} size="small" />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Stack>
+                                                </Grid>
+                                            </Grid>
+                                            <QRImage text={`ve-${t.ma}`} style={{ width: "100%" }} />
                                         </Grid>
                                     )
                                 }
@@ -76,11 +104,9 @@ export default function CheckoutTickets() {
                             sx={{ mb: 3 }}
                         />
                         <CardContent>
-                            <QRCode value={`hoa-don-${billing}`} size={256} style={{ width: "100%" }} />
+                            <QRImage text={`hoa-don-${billing}`} style={{ width: "100%" }} />
                         </CardContent>
-
                     </Card>
-
                 </Grid>
             </Grid>
         </>

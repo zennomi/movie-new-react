@@ -110,7 +110,7 @@ export default function CheckoutPayment() {
                 );
             }
             const response = await axios.post(`/api/hoa-don`, detailedTickets);
-            const billing = response.data.result;
+            const billing = response.data.result.mahoadon;
             dispatch(resetCart());
             dispatch(createBilling(billing));
             resetForm();

@@ -70,9 +70,9 @@ export default function CheckoutCart() {
                     <CardHeader
                         title={
                             <Typography variant="h6">
-                                Card
+                                Giỏ vé
                                 <Typography component="span" sx={{ color: 'text.secondary' }}>
-                                    &nbsp;({total} item)
+                                    &nbsp;({total} vé)
                                 </Typography>
                             </Typography>
                         }
@@ -89,8 +89,8 @@ export default function CheckoutCart() {
                         </Scrollbar>
                     ) : (
                         <EmptyContent
-                            title="Cart is empty"
-                            description="Look like you have no items in your shopping cart."
+                            title="Giỏ vé trống"
+                            description="Có vẻ chưa có vé nào trong giỏ."
                             img="/static/illustrations/illustration_empty_cart.svg"
                         />
                     )}

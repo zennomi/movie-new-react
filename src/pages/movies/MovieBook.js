@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 // material
 import { styled } from '@material-ui/core/styles';
 import {
@@ -9,7 +9,6 @@ import {
 import { StaticDatePicker, LocalizationProvider } from '@material-ui/lab';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import EventIcon from '@material-ui/icons/Event';
-import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import CancelIcon from '@material-ui/icons/Cancel';
 // components
@@ -24,10 +23,8 @@ import axios from "../../utils/axios";
 // utils
 import { fDate } from '../../utils/formatTime';
 import { fAmountTime } from '../../utils/formatNumber';
-
 // hooks
 import useIsMountedRef from '../../hooks/useIsMountedRef';
-
 //
 import { varFadeInUp, MotionInView, varFadeInDown } from '../../components/animate';
 
@@ -42,11 +39,10 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 export default function MovieBook() {
 	const location = useLocation();
+	const [searchParams, setSearchParams] = useSearchParams();
+	const maphim = Number(searchParams.get("maphim"));
 	const isMountedRef = useIsMountedRef();
 	const dispatch = useDispatch();
-
-
-	const maphim = Number(new URLSearchParams(location.search).get("maphim"));
 
 	const [movie, setMovie] = useState();
 	const [movies, setMovies] = useState();
@@ -82,7 +78,7 @@ export default function MovieBook() {
 				setMovie(response.data.result);
 			}
 		} catch (err) {
-			//
+			console.log(err);
 		}
 	}, [isMountedRef]);
 
@@ -93,16 +89,16 @@ export default function MovieBook() {
 				setMovies(response.data.results);
 			}
 		} catch (err) {
-			//
+			console.log(err);
 		}
 	}, [isMountedRef]);
 
 	const getShowtimes = async () => {
 		try {
-			const response = await axios.get(`/api/suat-chieu`, { params: { maphim: movie.ma, ngay: fDate(date) } });
+			const response = await axios.get(`/api/suat-chieu`, { params: { maphim: maphim || undefined, ngay: fDate(date) } });
 			setShowtimes(response.data.results);
 		} catch (err) {
-			//
+			console.log(err);
 		}
 	}
 
@@ -130,10 +126,10 @@ export default function MovieBook() {
 	}, [getMovies]);
 
 	useEffect(() => {
-		if (!movie && !date) return;
+		if (!maphim && !date) return;
 		getShowtimes();
 		return () => setShowtimes([]);
-	}, [movie, date]);
+	}, [maphim, date]);
 
 	useEffect(() => {
 		if (!showtime) return;
@@ -173,10 +169,13 @@ export default function MovieBook() {
 											renderInput={(params) => <TextField {...params} label="Phim" />}
 											value={movie}
 											onChange={(event, newMovie, reason) => {
-												setMovie(newMovie);
 												if (reason === 'clear') {
 													console.log("clear1");
 													setMovie({ ma: null, ten: '' });
+													setSearchParams({});
+												} else {
+													setMovie(newMovie);
+													setSearchParams({ maphim: newMovie.ma })
 												}
 											}}
 											key={movie && movie.ten}
@@ -205,7 +204,7 @@ export default function MovieBook() {
 												Các suất chiếu
 											</Typography>
 											{showtimes.map(s => (
-												<>
+												<Box key={s.ma}>
 													<Divider />
 													<Grid
 														container
@@ -234,10 +233,9 @@ export default function MovieBook() {
 																	<Chip color="primary" variant={s.ma === showtime?.ma ? "filled " : "outlined"} icon={<HourglassEmptyIcon />} label={fAmountTime(s.phim.thoigian)} size="small" />
 																</Grid>
 															</Grid>
-
 														</Grid>
 													</Grid>
-												</>
+												</Box>
 											))}
 										</Stack>
 									</CardContent>
@@ -248,11 +246,11 @@ export default function MovieBook() {
 									<CardContent>
 										<Stack spacing={2}>
 											<Typography variant="h5" sx={{ color: 'primary.main' }}>
-												Các suất chiếu
+												Phòng phim
 											</Typography>
 											<Box>
 												<Stack spacing={1}>
-													<Card sx={{ backgroundColor: 'primary.main', color: 'common.white', fontWeight: 'bold' }}>
+													<Card sx={{ backgroundColor: 'primary.main', color: 'common.white', fontWeight: 'bold', textAlign: 'center' }}>
 														<CardContent>
 															Màn hình
 														</CardContent>

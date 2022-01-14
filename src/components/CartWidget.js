@@ -1,4 +1,3 @@
-import { sum } from 'lodash';
 import { Icon } from '@iconify/react';
 import { Link as RouterLink } from 'react-router-dom';
 import shoppingCartFill from '@iconify/icons-eva/shopping-cart-fill';
@@ -6,8 +5,6 @@ import shoppingCartFill from '@iconify/icons-eva/shopping-cart-fill';
 // material
 import { styled } from '@material-ui/core/styles';
 import { Badge } from '@material-ui/core';
-// redux
-import useLocalStorage from '../hooks/useLocalStorage';
 
 import { useSelector } from '../redux/store';
 

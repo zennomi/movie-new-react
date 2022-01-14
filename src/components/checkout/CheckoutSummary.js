@@ -1,18 +1,13 @@
 import PropTypes from 'prop-types';
-import { Icon } from '@iconify/react';
-import editFill from '@iconify/icons-eva/edit-fill';
 // material
 import {
   Box,
   Card,
   Stack,
-  Button,
   Divider,
-  TextField,
   CardHeader,
   Typography,
   CardContent,
-  InputAdornment
 } from '@material-ui/core';
 // utils
 import { fCurrency } from '../../utils/formatNumber';
@@ -37,7 +32,7 @@ export default function CheckoutSummary({
   return (
     <Card sx={{ mb: 3 }}>
       <CardHeader
-        title="Order Summary"
+        title="Hoá đơn"
       />
 
       <CardContent>
@@ -56,7 +51,7 @@ export default function CheckoutSummary({
                 {fCurrency(detailedTickets.filter(t => t.trong).map(t => t.gia).reduce((a, b) => a + b, 0))}
               </Typography>
               <Typography variant="caption" sx={{ fontStyle: 'italic' }}>
-                (VAT included if applicable)
+                (cả VAT)
               </Typography>
             </Box>
           </Stack>
