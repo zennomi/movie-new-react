@@ -49,7 +49,7 @@ export default function CheckoutTicketList({ detailedTickets, onDelete, activeSt
                         const { suatchieu, hang, cot, gia } = ticket;
                         const { phim } = suatchieu;
                         return (
-                            <TableRow key={`${suatchieu.ma}-${hang}-${cot}`}>
+                            <TableRow key={`${suatchieu.masuatchieu}-${hang}-${cot}`}>
                                 <TableCell>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <ThumbImgStyle alt="product image" src={phim.bia} />
@@ -87,7 +87,7 @@ export default function CheckoutTicketList({ detailedTickets, onDelete, activeSt
                                     <><TableCell align="left">{ticket.trong ? <Typography sx={{ color: 'success.main' }}>Trống</Typography> : <Typography sx={{ color: 'error.main' }}>Đã hết</Typography>}</TableCell>
 
                                         <TableCell align="right">
-                                            <MIconButton onClick={() => onDelete({ showtimeId: suatchieu.ma, r: hang, c: cot })}>
+                                            <MIconButton onClick={() => onDelete({ showtimeId: suatchieu.masuatchieu, r: hang, c: cot })}>
                                                 <Icon icon={trash2Fill} width={20} height={20} />
                                             </MIconButton>
                                         </TableCell>

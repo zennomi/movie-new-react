@@ -2,6 +2,7 @@ import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@material-ui/core/styles';
 import { Box, Button, AppBar, Toolbar, Container } from '@material-ui/core';
+import TheatersIcon from '@material-ui/icons/Theaters';
 // hooks
 import useOffSetTop from '../../hooks/useOffSetTop';
 // components
@@ -78,8 +79,8 @@ export default function MainNavbar() {
             <MenuDesktop isOffset={isOffset} isHome={isHome} navConfig={navConfig} />
           </MHidden>
 
-          <Button variant="contained" target="_blank" href="https://github.com/zennomi/movie-new-react">
-            Github
+          <Button component={RouterLink} variant="contained" to="/movies/book" startIcon={<TheatersIcon/>}>
+            Đặt vé
           </Button>
 
           <MHidden width="mdUp">

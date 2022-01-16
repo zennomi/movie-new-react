@@ -54,10 +54,12 @@ export default function CheckoutCart() {
         } catch (err) {
             //
         }
+
     }, [isMountedRef, tickets]);
 
     useEffect(() => {
         getTickets();
+        return () => setTickets([]);
     }, [getTickets])
 
     return (
@@ -114,8 +116,8 @@ export default function CheckoutCart() {
                     size="large"
                     variant="contained"
                     disabled={detailedTickets.filter(t => t.trong).length === 0}
-                    onClick={() => {handleNextStep()}}
-                    >
+                    onClick={() => { handleNextStep() }}
+                >
                     Thanh toán
                 </Button>
             </Grid>

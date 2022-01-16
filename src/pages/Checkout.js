@@ -84,12 +84,6 @@ export default function EcommerceCheckout() {
   const { activeStep } = checkout;
   const isComplete = activeStep === STEPS.length;
 
-//   useEffect(() => {
-//     if (isMountedRef.current) {
-//       dispatch(getCart(cart));
-//     }
-//   }, [dispatch, isMountedRef, cart]);
-
   useEffect(() => {
     if (activeStep === 1) {
       dispatch(createBilling(null));

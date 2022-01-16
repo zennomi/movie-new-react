@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
-import { Box, Card, Paper, Typography, CardContent, Container, Link, Icon } from '@material-ui/core';
+import { Box, Card, Paper, Typography, CardContent, Container, Link, Icon, Skeleton } from '@material-ui/core';
 import arrowForwardFill from '@iconify/icons-eva/arrow-forward-fill';
 // utils
 import axios from '../../../utils/axios';
@@ -21,7 +21,7 @@ const RootStyle = styled('div')(({ theme }) => ({
 	position: 'relative',
 	paddingTop: theme.spacing(15),
 	[theme.breakpoints.up('md')]: {
-	  paddingBottom: theme.spacing(15)
+		paddingBottom: theme.spacing(15)
 	}
 }));
 
@@ -95,6 +95,47 @@ function CarouselItem({ item }) {
 	);
 }
 
+const CarouselItemSkeleton = () => (
+	<Paper
+		sx={{
+			mx: 1,
+			mb: 2,
+			borderRadius: 2,
+			overflow: 'hidden',
+			paddingTop: 'calc(16 /9 * 100%)',
+			position: 'relative',
+		}}
+	>
+		<Skeleton
+			sx={(theme) => ({
+				top: 0,
+				width: '100%',
+				height: '100%',
+				objectFit: 'cover',
+				position: 'absolute',
+				transform: 'none'
+			})}
+		/>
+		<CardContent
+			sx={{
+				bottom: 0,
+				zIndex: 9,
+				width: '100%',
+				textAlign: 'left',
+				position: 'absolute',
+				color: 'common.white',
+				backgroundImage: (theme) =>
+					`linear-gradient(to top, ${theme.palette.grey[900]} 0%,${alpha(theme.palette.grey[900], 0)} 100%)`
+			}}
+		>
+			<Typography variant="h4" paragraph>
+				<Skeleton variant="text" />
+			</Typography>
+			<Skeleton variant="text" width="50%" />
+		</CardContent>
+	</Paper>
+)
+
 export default function LandingHotMovie() {
 	const theme = useTheme();
 	const [movies, setMovies] = useState([]);
@@ -104,18 +145,18 @@ export default function LandingHotMovie() {
 
 	const getMovies = useCallback(async () => {
 		try {
-		  const response = await axios.get('/api/phim?skip=20');
-		  if (isMountedRef.current) {
-			setMovies(response.data.results);
-		  }
+			const response = await axios.get('/api/phim?skip=20');
+			if (isMountedRef.current) {
+				setMovies(response.data.results);
+			}
 		} catch (err) {
-		  //
+			//
 		}
-	  }, [isMountedRef]);
-	
-	  useEffect(() => {
+	}, [isMountedRef]);
+
+	useEffect(() => {
 		getMovies();
-	  }, [getMovies]);
+	}, [getMovies]);
 
 	const carouselRef = useRef();
 	const settings = {
@@ -166,9 +207,12 @@ export default function LandingHotMovie() {
 				<Card>
 					<CardContent>
 						<Slider ref={carouselRef} {...settings}>
-							{movies.map((item, index) => (
-								<CarouselItem key={item.ma} item={item} index={index} />
-							))}
+							{
+								movies.length === 0 ?
+									Array(5).fill(<CarouselItemSkeleton />) :
+									movies.map((item, index) => (
+										<CarouselItem key={item.ma} item={item} index={index} />
+									))}
 						</Slider>
 					</CardContent>
 					<CarouselControlsArrowsBasic2 onNext={handleNext} onPrevious={handlePrevious} />
