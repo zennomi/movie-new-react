@@ -36,7 +36,7 @@ import { ticketObjToArr } from '../../utils/formatTickets'
 // ----------------------------------------------------------------------
 
 const CountdownMemo = memo(({ handleComplete, countdownRef }) =>
-    <Countdown date={Date.now() + 5 * 1000} renderer={countdownRenderer} onComplete={handleComplete} ref={countdownRef} />
+    <Countdown date={Date.now() + 5 * 60 * 1000} renderer={countdownRenderer} onComplete={handleComplete} ref={countdownRef} />
 )
 
 const countdownRenderer = ({ minutes, seconds, completed }) => {
@@ -160,6 +160,7 @@ export default function CheckoutPayment() {
                             <CheckoutTicketList
                                 detailedTickets={detailedTickets}
                                 activeStep={activeStep}
+                                total={total}
                             />
                         </Scrollbar>
                     ) : (

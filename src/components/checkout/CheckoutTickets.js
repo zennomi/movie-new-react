@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import QRImage from 'react-qr-image'
 // material
-import { Alert, Card, CardContent, CardHeader, Grid, Typography, Stack, Chip } from "@material-ui/core";
+import { Alert, Card, CardContent, CardHeader, Grid, Typography, Stack, Chip, Skeleton } from "@material-ui/core";
 // icons
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import EventIcon from '@material-ui/icons/Event';
@@ -48,37 +48,43 @@ export default function CheckoutTickets() {
                         <CardContent>
                             <Grid container space={2} spacing={2}>
                                 {
-                                    tickets.map(t =>
-                                        <Grid key={t.ma} item xs={6} >
-                                            <Grid container spacing={1} sx={{ mb: 1 }}>
-                                                <Grid item xs={3}>
-                                                    <Card sx={{ borderRadius: 0.5 }}>
-                                                        {t.suatchieu && <img alt={t.suatchieu.phim.ten} src={t.suatchieu.phim.bia} />}
-                                                    </Card>
-                                                </Grid>
-                                                <Grid item xs={9} sx={{ mb: 1 }}>
-                                                    <Stack >
-                                                        <Typography
-                                                            variant="h5"
-                                                            color="primary"
-                                                        >
-                                                            {t.suatchieu.phim.ten}{" "}
-                                                            <Chip color="primary" icon={<EventIcon />} label={`${t.suatchieu.ngay} ${t.suatchieu.ca}`} size="small" />
-                                                        </Typography>
-                                                        <Grid item container spacing={1}>
-                                                            <Grid item>
-                                                                <Chip color="primary" icon={<HourglassEmptyIcon />} label={fAmountTime(t.suatchieu.phim.thoigian)} size="small" />
+                                    tickets.length === 0 ?
+                                        Array(2).fill(
+                                            <Grid item xs={6}><Skeleton width="100%" height="100%"/></Grid>
+                                        ) :
+                                        tickets.map(t =>
+                                            <Grid key={t.ma} item xs={6} >
+                                                <Grid container spacing={1} sx={{ mb: 1 }}>
+                                                    <Grid item xs={3}>
+                                                        <Card sx={{ borderRadius: 0.5 }}>
+                                                            {t.suatchieu && <img alt={t.suatchieu.phim.ten} src={t.suatchieu.phim.bia} />}
+                                                        </Card>
+                                                    </Grid>
+                                                    <Grid item xs={9} sx={{ mb: 1 }}>
+                                                        <Stack >
+                                                            <Typography
+                                                                variant="h5"
+                                                                color="primary"
+                                                            >
+                                                                {t.suatchieu.phim.ten}{" "}
+                                                                <Chip color="primary" icon={<EventIcon />} label={`${t.suatchieu.ngay} ${t.suatchieu.ca}`} size="small" />
+                                                            </Typography>
+                                                            <Grid item container spacing={1}>
+                                                                <Grid item>
+                                                                    <Chip color="primary" icon={<HourglassEmptyIcon />} label={fAmountTime(t.suatchieu.phim.thoigian)} size="small" />
+                                                                </Grid>
+                                                                <Grid item>
+                                                                    <Chip color="primary" label={`Ghế: ${t.hang + 1}-${t.cot + 1}`} size="small" />
+                                                                </Grid>
                                                             </Grid>
-                                                            <Grid item>
-                                                                <Chip color="primary" label={`Ghế: ${t.hang + 1}-${t.cot + 1}`} size="small" />
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Stack>
+                                                        </Stack>
+                                                    </Grid>
                                                 </Grid>
+                                                <Card>
+                                                    <QRImage text={`ve-${t.ma}`} style={{ width: "100%" }} />
+                                                </Card>
                                             </Grid>
-                                            <QRImage text={`ve-${t.ma}`} style={{ width: "100%" }} />
-                                        </Grid>
-                                    )
+                                        )
                                 }
                             </Grid>
                         </CardContent>
@@ -101,7 +107,9 @@ export default function CheckoutTickets() {
                             sx={{ mb: 3 }}
                         />
                         <CardContent>
-                            <QRImage text={`hoa-don-${billing}`} style={{ width: "100%" }} />
+                            <Card>
+                                <QRImage text={`hoa-don-${billing}`} style={{ width: "100%" }} />
+                            </Card>
                         </CardContent>
                     </Card>
                 </Grid>

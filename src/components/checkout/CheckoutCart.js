@@ -85,6 +85,7 @@ export default function CheckoutCart() {
                                 detailedTickets={detailedTickets}
                                 onDelete={handleRemoveTicket}
                                 activeStep={activeStep}
+                                total={total}
                             />
                         </Scrollbar>
                     ) : (
