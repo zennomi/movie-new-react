@@ -141,8 +141,6 @@ export default function LandingHotMovie() {
 	const [movies, setMovies] = useState([]);
 	const isMountedRef = useIsMountedRef();
 
-	console.log(movies);
-
 	const getMovies = useCallback(async () => {
 		try {
 			const response = await axios.get('/api/phim?skip=20');

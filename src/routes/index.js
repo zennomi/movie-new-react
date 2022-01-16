@@ -57,7 +57,7 @@ export default function Router() {
           children: [
             { path: '/', element: <Navigate to="/movies/now-showing" /> },
             { path: 'now-showing', element: <LandingHotMovie /> },
-            { path: 'coming-soon', element: <PageOne /> },
+            { path: 'coming-soon', element: <LandingInComingMovie /> },
             { path: 'book', element: <MovieBook /> },
             { path: '/:maphim', element: <MovieDetails /> },
             { path: '*', element: <Navigate to="/404" replace /> },
@@ -81,4 +81,5 @@ const MoviesLayout = Loadable(lazy(() => import('../layouts/movies')));
 const LandingPage = Loadable(lazy(() => import('../pages/LandingPage')));
 const Checkout = Loadable(lazy(() => import('../pages/Checkout')));
 const LandingHotMovie = Loadable(lazy(() => import('../components/_external-pages/landing/LandingHotMovie')));
+const LandingInComingMovie = Loadable(lazy(() => import('../components/_external-pages/landing/LandingInComingMovie')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));

@@ -6,7 +6,7 @@ import alertCircleFill from '@iconify/icons-eva/alert-circle-fill';
 import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
 import checkmarkCircle2Fill from '@iconify/icons-eva/checkmark-circle-2-fill';
 // material
-import { useTheme } from '@material-ui/styles';
+import { alpha, useTheme } from '@material-ui/core/styles';
 import { Box, GlobalStyles } from '@material-ui/core';
 
 // ----------------------------------------------------------------------
@@ -30,7 +30,7 @@ function SnackbarStyles() {
             '&.SnackbarItem-variantSuccess, &.SnackbarItem-variantError, &.SnackbarItem-variantWarning, &.SnackbarItem-variantInfo':
               {
                 color: theme.palette.text.primary,
-                backgroundColor: theme.palette.background.default
+                backgroundColor: theme.palette.background.paper
               }
           },
           '& .SnackbarItem-message': {
@@ -66,7 +66,7 @@ function SnackbarIcon({ icon, color }) {
         alignItems: 'center',
         justifyContent: 'center',
         color: `${color}.main`,
-        bgcolor: 'background.default'
+        bgcolor: (theme) => alpha(theme.palette[color].main, 0.16)
       }}
     >
       <Icon icon={icon} width={24} height={24} />

@@ -7,7 +7,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactPlayer from 'react-player/youtube'
 // material
 import { alpha, styled, useTheme } from '@material-ui/core/styles';
-import { Box, Card, Grid, Divider, Container, Typography, Stack, Rating, Button } from '@material-ui/core';
+import { Box, Card, Grid, Divider, Container, Typography, Stack, Rating, Button, Skeleton } from '@material-ui/core';
 // icon
 import roundAddShoppingCart from '@iconify/icons-ic/round-add-shopping-cart';
 // hooks
@@ -17,6 +17,7 @@ import useSettings from '../../hooks/useSettings';
 import Page from '../../components/Page';
 import Label from '../../components/Label';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
+import LoadingScreen from '../../components/LoadingScreen';
 // utils
 import axios from '../../utils/axios';
 
@@ -89,7 +90,7 @@ export default function MovieDetails() {
 						{ name: movie ? (movie.ten).toUpperCase() : '' }
 					]}
 				/>
-				{movie && (
+				{movie ? (
 					<>
 						<Card sx={{ mb: 2 }}>
 							<Grid container sx={{ p: 2 }} spacing={3}>
@@ -197,7 +198,10 @@ export default function MovieDetails() {
 						</Card>
 
 					</>
-				)}
+				) :
+				<LoadingScreen sx={{backgroundColor: 'transperent', minHeight: 500}} />
+			
+			}
 			</Container>
 		</Page>
 	)
