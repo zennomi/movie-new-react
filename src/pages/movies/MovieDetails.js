@@ -7,7 +7,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactPlayer from 'react-player/youtube'
 // material
 import { alpha, styled, useTheme } from '@material-ui/core/styles';
-import { Box, Tab, Card, Grid, Divider, Skeleton, Container, Typography, Stack, Rating, Button } from '@material-ui/core';
+import { Box, Card, Grid, Divider, Container, Typography, Stack, Rating, Button } from '@material-ui/core';
 // icon
 import roundAddShoppingCart from '@iconify/icons-ic/round-add-shopping-cart';
 // hooks
@@ -73,17 +73,11 @@ export default function MovieDetails() {
 		} catch (err) {
 			//
 		}
-	}, [isMountedRef]);
+	}, [isMountedRef, maphim]);
 
 	useEffect(() => {
 		getMovie();
 	}, [getMovie]);
-
-	const [value, setValue] = useState('1');
-
-	const handleChangeTab = (event, newValue) => {
-		setValue(newValue);
-	};
 
 	return (
 		<Page title={movie?.ten}>

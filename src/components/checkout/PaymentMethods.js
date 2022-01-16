@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
-import plusFill from '@iconify/icons-eva/plus-fill';
 import checkmarkCircle2Fill from '@iconify/icons-eva/checkmark-circle-2-fill';
 import infoFill from '@iconify/icons-eva/info-fill';
 
@@ -11,7 +10,6 @@ import {
     Stack,
     Paper,
     Radio,
-    Button,
     Collapse,
     TextField,
     Typography,
@@ -60,7 +58,6 @@ PaymentMethods.propTypes = {
 };
 
 export default function PaymentMethods({ formik }) {
-    const [show, setShow] = useState(false);
     const [isOpen, setIsOpen] = useState(null);
 
     const { values, getFieldProps } = formik;

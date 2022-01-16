@@ -11,11 +11,8 @@ import { fAmountTime } from '../../utils/formatNumber';
 
 // redux
 import { useSelector } from '../../redux/store';
-// hooks
-import useIsMountedRef from '../../hooks/useIsMountedRef';
 
 export default function CheckoutTickets() {
-    const isMountedRef = useIsMountedRef();
     const { checkout } = useSelector((state) => state.ticket);
     const { billing } = checkout;
     console.log(billing);
@@ -28,11 +25,11 @@ export default function CheckoutTickets() {
         } catch (error) {
             console.log(error);
         }
-    }, [isMountedRef, tickets]);
+    }, [billing]);
 
     useEffect(() => {
         getTickets();
-    }, []);
+    }, [getTickets]);
 
     return (
         <>

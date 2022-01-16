@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { Icon } from '@iconify/react';
 import trash2Fill from '@iconify/icons-eva/trash-2-fill';
 // material
@@ -16,7 +15,6 @@ import {
     TableContainer
 } from '@material-ui/core';
 // utils
-import getColorName from '../../utils/getColorName';
 import { fCurrency } from '../../utils/formatNumber';
 //
 import { MIconButton } from '../@material-extend';
@@ -28,7 +26,6 @@ const ThumbImgStyle = styled('img')(({ theme }) => ({
     marginRight: theme.spacing(2),
     borderRadius: theme.shape.borderRadiusSm
 }));
-
 
 export default function CheckoutTicketList({ detailedTickets, onDelete, activeStep }) {
     return (

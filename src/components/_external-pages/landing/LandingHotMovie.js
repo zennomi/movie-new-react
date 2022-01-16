@@ -4,10 +4,9 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import { alpha, useTheme, styled } from '@material-ui/core/styles';
-import { Box, Card, Paper, Button, Typography, CardContent, Container, Link, Icon } from '@material-ui/core';
+import { Box, Card, Paper, Typography, CardContent, Container, Link, Icon } from '@material-ui/core';
 import arrowForwardFill from '@iconify/icons-eva/arrow-forward-fill';
 // utils
-import mockData from '../../../utils/mock-data';
 import axios from '../../../utils/axios';
 // hooks
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
@@ -41,7 +40,7 @@ CarouselItem.propTypes = {
 	item: PropTypes.object
 };
 
-function CarouselItem({ item, index }) {
+function CarouselItem({ item }) {
 	const { bia, ten, ma } = item;
 
 	return (
@@ -96,10 +95,6 @@ function CarouselItem({ item, index }) {
 	);
 }
 
-function emptyDiv() {
-	return <div>{" "}</div>
-}
-
 export default function LandingHotMovie() {
 	const theme = useTheme();
 	const [movies, setMovies] = useState([]);
@@ -109,7 +104,7 @@ export default function LandingHotMovie() {
 
 	const getMovies = useCallback(async () => {
 		try {
-		  const response = await axios.get('/api/phim');
+		  const response = await axios.get('/api/phim?skip=20');
 		  if (isMountedRef.current) {
 			setMovies(response.data.results);
 		  }

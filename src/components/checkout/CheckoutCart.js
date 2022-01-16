@@ -1,8 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { sum } from 'lodash';
 import { Icon } from '@iconify/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { useFormik, Form, FormikProvider } from 'formik';
 import arrowIosBackFill from '@iconify/icons-eva/arrow-ios-back-fill';
 // material
 import { Grid, Card, Button, CardHeader, Typography } from '@material-ui/core';
@@ -36,7 +34,7 @@ export default function CheckoutCart() {
 
     const [detailedTickets, setTickets] = useState([]);
     const { checkout, total, tickets } = useSelector((state) => state.ticket);
-    const { subtotal, activeStep } = checkout;
+    const { activeStep } = checkout;
     const isEmptyCart = total === 0;
 
     const handleRemoveTicket = (ticket) => {

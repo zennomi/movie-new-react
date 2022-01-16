@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 // material
 import { styled } from '@material-ui/core/styles';
 import {
@@ -14,6 +14,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 // components
 import Page from "../../components/Page";
 import MFab from "../../components/@material-extend/MFab";
+import Scrollbar from '../../components/Scrollbar';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { addTicket, removeTicket } from '../../redux/slices/ticket';
@@ -38,7 +39,6 @@ const RootStyle = styled('div')(({ theme }) => ({
 }));
 
 export default function MovieBook() {
-	const location = useLocation();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const maphim = Number(searchParams.get("maphim"));
 	const isMountedRef = useIsMountedRef();
@@ -80,7 +80,7 @@ export default function MovieBook() {
 		} catch (err) {
 			console.log(err);
 		}
-	}, [isMountedRef]);
+	}, [isMountedRef, maphim]);
 
 	const getMovies = useCallback(async () => {
 		try {
@@ -203,40 +203,47 @@ export default function MovieBook() {
 											<Typography variant="h5" sx={{ color: 'primary.main' }}>
 												Các suất chiếu
 											</Typography>
-											{showtimes.map(s => (
-												<Box key={s.ma}>
-													<Divider />
-													<Grid
-														container
-														spacing={1}
-														style={{ cursor: 'pointer' }}
-														sx={{ bgcolor: s.ma === showtime?.ma ? 'primary.main' : '', borderRadius: 1, p: 1 }}
-														onClick={() => { setShowtime(s) }}
-													>
-														<Grid item xs={2}>
-															<Card sx={{ borderRadius: 0.5 }}>
-																<img
-																	src={s.phim.bia}
-																	alt={s.phim.ten}
-																/>
-															</Card>
-														</Grid>
-														<Grid item xs={10}>
-															<Typography>
-																{s.phim.ten}
-															</Typography>
-															<Grid item container spacing={1}>
-																<Grid item>
-																	<Chip color="primary" variant={s.ma === showtime?.ma ? "filled" : "outlined"} icon={<EventIcon />} label={`${s.ngay} ${s.ca}`} size="small" />
-																</Grid>
-																<Grid item>
-																	<Chip color="primary" variant={s.ma === showtime?.ma ? "filled " : "outlined"} icon={<HourglassEmptyIcon />} label={fAmountTime(s.phim.thoigian)} size="small" />
+											<Scrollbar
+											sx={{
+												height: '500px',
+												p: 1
+											  }}
+											>
+												{showtimes.map(s => (
+													<Box key={s.ma}>
+														<Divider />
+														<Grid
+															container
+															spacing={1}
+															style={{ cursor: 'pointer' }}
+															sx={{ bgcolor: s.ma === showtime?.ma ? 'primary.main' : '', borderRadius: 1, p: 1 }}
+															onClick={() => { setShowtime(s) }}
+														>
+															<Grid item xs={2}>
+																<Card sx={{ borderRadius: 0.5 }}>
+																	<img
+																		src={s.phim.bia}
+																		alt={s.phim.ten}
+																	/>
+																</Card>
+															</Grid>
+															<Grid item xs={10}>
+																<Typography>
+																	{s.phim.ten}
+																</Typography>
+																<Grid item container spacing={1}>
+																	<Grid item>
+																		<Chip color="primary" variant={s.ma === showtime?.ma ? "filled" : "outlined"} icon={<EventIcon />} label={`${s.ngay} ${s.ca}`} size="small" />
+																	</Grid>
+																	<Grid item>
+																		<Chip color="primary" variant={s.ma === showtime?.ma ? "filled " : "outlined"} icon={<HourglassEmptyIcon />} label={fAmountTime(s.phim.thoigian)} size="small" />
+																	</Grid>
 																</Grid>
 															</Grid>
 														</Grid>
-													</Grid>
-												</Box>
-											))}
+													</Box>
+												))}
+											</Scrollbar>
 										</Stack>
 									</CardContent>
 								</Card>

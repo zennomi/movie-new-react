@@ -1,4 +1,3 @@
-import { reject } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 // utils
 

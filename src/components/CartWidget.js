@@ -34,7 +34,7 @@ const RootStyle = styled(RouterLink)(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function CartWidget() {
-    const { tickets, total } = useSelector((state) => state.ticket);
+    const { total } = useSelector((state) => state.ticket);
     //   const totalItems = sum(checkout.cart.map((item) => item.quantity));
     return (
         <RootStyle to="/checkout">

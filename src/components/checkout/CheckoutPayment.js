@@ -39,7 +39,7 @@ const CountdownMemo = memo(({ handleComplete, countdownRef }) =>
     <Countdown date={Date.now() + 5 * 1000} renderer={countdownRenderer} onComplete={handleComplete} ref={countdownRef} />
 )
 
-const countdownRenderer = ({ hours, minutes, seconds, completed }) => {
+const countdownRenderer = ({ minutes, seconds, completed }) => {
     if (completed) {
         return <Typography sx={{ color: 'error.main' }}>Hết thời gian thanh toán</Typography>
     }
@@ -114,7 +114,7 @@ export default function CheckoutPayment() {
             dispatch(resetCart());
             dispatch(createBilling(billing));
             resetForm();
-            enqueueSnackbar('Payment success', { variant: 'success' });
+            enqueueSnackbar('Thanh toán thành công', { variant: 'success' });
             dispatch(onNextStep());
         }
     });
@@ -127,14 +127,15 @@ export default function CheckoutPayment() {
                 setIsLoading(false);
             }
         } catch (err) {
-            //
+            enqueueSnackbar('Đã có lỗi xảy ra!', { variant: 'error' });
+            dispatch(onBackStep());
         }
     }, [isMountedRef, tickets]);
 
     const handleComplete = useCallback(async () => {
         await axios.post(`/api/ve/huy`, ticketObjToArr(tickets));
         dispatch(onBackStep());
-    }, []);
+    }, [dispatch, tickets]);
 
     useEffect(() => {
         getTickets();

@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from '../redux/store';
 import { createBilling } from '../redux/slices/ticket';
 
 // hooks
-import useIsMountedRef from '../hooks/useIsMountedRef';
 import useSettings from '../hooks/useSettings';
 // components
 import Page from '../components/Page';
@@ -81,9 +80,8 @@ function QontoStepIcon({ active, completed }) {
 export default function EcommerceCheckout() {
   const { themeStretch } = useSettings();
   const dispatch = useDispatch();
-  const isMountedRef = useIsMountedRef();
   const { checkout } = useSelector((state) => state.ticket);
-  const { cart, billing, activeStep } = checkout;
+  const { activeStep } = checkout;
   const isComplete = activeStep === STEPS.length;
 
 //   useEffect(() => {
