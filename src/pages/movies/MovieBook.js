@@ -44,6 +44,8 @@ const RootStyle = styled('div')(({ theme }) => ({
 }));
 
 export default function MovieBook() {
+	const tomorrow = new Date((new Date()).valueOf() + 24 * 3600 * 1000)
+
 	const [searchParams, setSearchParams] = useSearchParams();
 	const maphim = Number(searchParams.get("maphim"));
 	const isMountedRef = useIsMountedRef();
@@ -51,7 +53,7 @@ export default function MovieBook() {
 
 	const [movie, setMovie] = useState();
 	const [movies, setMovies] = useState();
-	const [date, setDate] = useState(new Date());
+	const [date, setDate] = useState(tomorrow);
 	const [showtimes, setShowtimes] = useState([]);
 	const [showtime, setShowtime] = useState({});
 	const [filledSlots, setFilledSlots] = useState([[]]);
@@ -216,7 +218,7 @@ export default function MovieBook() {
 												onChange={(newDate) => { setDate(newDate) }}
 												renderInput={(params) => <TextField {...params} />}
 												sx={{ w: 1 }}
-												disablePast
+												minDate={tomorrow}
 												disableMaskedInput
 											/>
 										</LocalizationProvider>

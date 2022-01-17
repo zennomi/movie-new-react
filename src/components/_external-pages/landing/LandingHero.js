@@ -107,15 +107,35 @@ export default function LandingHero() {
             </Stack>
 
             <motion.div variants={varFadeInRight}>
-              <Button
-                size="large"
-                variant="contained"
-                component="a"
-                href="https://github.com/zennomi/movie-new-react"
-                startIcon={<Icon icon={flashFill} width={20} height={20} />}
-              >
-                Github
-              </Button>
+              <Stack direction="row" spacing={1} sx={{ display: 'flex', justifyContent: 'space-around' }}>
+                <Button
+                  size="large"
+                  variant="contained"
+                  component="a"
+                  href="https://github.com/zennomi/movie-new-react"
+                  startIcon={<Icon icon={flashFill} width={20} height={20} />}
+                >
+                  Frontend
+                </Button>
+                <Button
+                  size="large"
+                  variant="contained"
+                  component="a"
+                  href="https://github.com/ngtuan092/r-p-xi-c"
+                  startIcon={<Icon icon={flashFill} width={20} height={20} />}
+                >
+                  Backend
+                </Button>
+                <Button
+                  size="large"
+                  variant="contained"
+                  component="a"
+                  href="https://github.com/huyhoan1109/movie-new-database"
+                  startIcon={<Icon icon={flashFill} width={20} height={20} />}
+                >
+                  Database
+                </Button>
+              </Stack>
             </motion.div>
 
             <Stack direction="row" spacing={1.5} justifyContent={{ xs: 'center', md: 'flex-start' }}>

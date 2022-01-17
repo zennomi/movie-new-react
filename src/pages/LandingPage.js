@@ -5,7 +5,7 @@ import Page from '../components/Page';
 import {
   LandingHero,
   LandingHotMovie,
-  LandingCleanInterfaces,
+  LandingGenreMovie,
   LandingInComingMovie,
 
 } from '../components/_external-pages/landing';
@@ -31,7 +31,7 @@ export default function LandingPage() {
       <ContentStyle>
         <LandingHotMovie />
         <LandingInComingMovie />
-        <LandingCleanInterfaces />
+        <LandingGenreMovie />
       </ContentStyle>
     </RootStyle>
   );
